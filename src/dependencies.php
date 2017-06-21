@@ -31,3 +31,13 @@ $container['view'] = function ($c) {
 
     return $view;
 };
+
+$container['database'] = function ($c) {
+    $dsn = 'mysql:host=' . $c->get('settings')['database']['host'] . ';dbname=' . $c->get('settings')['database']['database'] . ';charset=utf8';
+    $usr = $c->get('settings')['database']['username'];
+    $pwd = $c->get('settings')['database']['password'];
+
+    $pdo = new \Slim\PDO\Database($dsn, $usr, $pwd);
+
+    return $pdo;
+};

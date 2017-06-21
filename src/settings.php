@@ -17,5 +17,7 @@ return [
             'path' => __DIR__ . '/../logs/app.log',
             'level' => \Monolog\Logger::DEBUG,
         ],
+
+        'database' => \Symfony\Component\Yaml\Yaml::parse(file_get_contents(__DIR__ . '/db.yaml'))['database']
     ],
 ];

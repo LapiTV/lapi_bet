@@ -3,3 +3,4 @@
 !/logs/README.md
 .idea/
 cache/
+src/db.yaml

@@ -1,0 +1,49 @@
+{% extends 'template/base.html.twig' %}
+
+{% block content %}
+    <div class="container">
+        <form method="post" id="formCreateBet">
+            {% if error %}
+                <div class="alert alert-danger" role="alert">{{ error }}</div>
+            {% endif %}
+            <div class="form-group">
+                <label for="name">Nom</label>
+                <input type="text" required class="form-control" name="name" id="name" placeholder="Nom" value="{{ data.name }}">
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input type="text" class="form-control" name="description" id="description" placeholder="Description" value="{{ data.description }}">
+            </div>
+            <div class="form-group">
+                <label for="answerType">Type de réponse</label>
+                <select class="form-control" name="answerType" id="answerType">
+                    {% for type in answerTypes %}
+                        <option {% if type.id == data.answerTypeId %}selected{% endif %} value="{{ type.id }}">{{ type.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="durationMinute">Durée du pari</label>
+                <div class="input-group">
+                    <input type="number" min="0" class="form-control js--duration" id="durationMinute"
+                           name="durationMinute" placeholder="Durée (en minutes)"
+                           aria-describedby="durationMinute-description" required value="{{ data.pariDurationMinute }}">
+                    <span class="input-group-addon" id="durationMinute-description">minutes</span>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-block btn-default">Valider</button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="application/javascript">
+        var form = $('#formCreateBet');
+        form.on('submit', function (e) {
+            var duration = form.find('.js--duration').val();
+            if(duration > 10) {
+                return confirm('Es-tu sûr de mettre un vote à ' + duration + ' minutes ? Il n\'est possible d\'avoir qu\'un seul vote en même temps');
+            }
+        });
+    </script>
+{% endblock %}
