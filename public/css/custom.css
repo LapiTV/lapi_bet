@@ -1,0 +1,41 @@
+@import 'https://fonts.googleapis.com/css?family=Roboto:300,400,500';
+
+html {
+    position: relative;
+    min-height: 100%;
+    width: 100%;
+}
+
+body {
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-size: 20px;
+    line-height: 1.5;
+    color: #555;
+    margin-bottom: 80px !important;
+}
+.container {
+    margin-top: 100px;
+    max-width: 50em;
+    margin-left: auto;
+    margin-right: auto;
+}
+h1,
+h2,
+strong,
+a {
+    color: #333;
+}
+
+.title {
+    text-align:center;
+}
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 70px;
+    background-color: #f5f5f5;
+    padding-top: 20px;
+    text-align: center;
+}
