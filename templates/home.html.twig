@@ -1,0 +1,16 @@
+{% extends 'template/base.html.twig' %}
+
+{% block content %}
+    <div id="message" class="js--message" style="text-align: center; margin-top:20%; font-size:30px;">
+        {% if error %}
+            {{ error }}
+        {% endif %}
+    </div>
+    <div class="js--data" style="display: none;">
+        <input type="hidden" id="time" value="{{ time }}">
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/js/home.js"></script>
+{% endblock %}

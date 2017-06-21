@@ -13,7 +13,6 @@ use Bet\App\Controller\BaseController;
 use Bet\App\Exception\FormException;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Slim\Route;
 use Slim\Router;
 
 class BetController extends BaseController

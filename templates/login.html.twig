@@ -1,0 +1,22 @@
+{% extends 'template/base.html.twig' %}
+
+{% block content %}
+    <div class="container">
+        <form method="post">
+            {% if error %}
+                <div class="alert alert-danger" role="alert">{{ error }}</div>
+            {% endif %}
+            <div class="form-group">
+                <label for="username">Pseudo</label>
+                <input type="text" class="form-control" name="username" id="username" placeholder="Pseudo"
+                       value="{{ data.username }}" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" class="form-control" name="password" id="password" placeholder="Mot de passe"
+                       value="{{ data.password }}" required>
+            </div>
+            <button type="submit" class="btn btn-block btn-default">Valider</button>
+        </form>
+    </div>
+{% endblock %}
