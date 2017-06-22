@@ -39,3 +39,9 @@ a {
     padding-top: 20px;
     text-align: center;
 }
+
+#graphHighchart {
+    min-width: 320px;
+    max-width: 600px;
+    margin: 100px auto;
+}

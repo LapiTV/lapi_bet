@@ -12,10 +12,17 @@ $app->get('/logout', \Bet\App\Controller\LoginController::class . ':logoutAction
     ->setName('Logout')
     ->add(new Bet\App\Middleware\AuthMiddleware($container));
 
-$app->map(['GET', 'POST'], '/createBet', \Bet\App\Controller\Bet\BetController::class . ':createBet')
-    ->setName('Create_Bet')
+$app->group('/bet', function () use ($container) {
+    $this->get('', \Bet\App\Controller\Bet\BetController::class . ':listBetAction')
+        ->setName('List_Bet');
+
+    $this->map(['GET', 'POST'], '/create', \Bet\App\Controller\Bet\BetController::class . ':createBet')
+        ->setName('Create_Bet');
+
+    $this->get('/{betId:[0-9]+}', \Bet\App\Controller\Bet\BetController::class . ':displayBetAction')
+        ->setName('Display_Bet');
+})
     ->add(new Bet\App\Middleware\AuthMiddleware($container));
 
-$app->get('/listBet', \Bet\App\Controller\Bet\BetController::class . ':listBetAction')
-    ->setName('List_Bet')
-    ->add(new Bet\App\Middleware\AuthMiddleware($container));
+$app->get('/ajax/bet/{betId:[0-9]+}', \Bet\App\Controller\Bet\BetController::class . ':ajaxGetDataBet')
+    ->setName('Ajax_Get_Data_Bet');

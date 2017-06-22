@@ -51,6 +51,93 @@ class BetController extends BaseController
         ]);
     }
 
+    public function displayBetAction(Request $request, Response $response, $args)
+    {
+        $betId = $args['betId'];
+
+        $selectStatement = $this->database->select()
+            ->from('bet')
+            ->where('id', '=', $betId);
+        $bet = $selectStatement->execute()->fetch();
+
+        if(empty($bet)) {
+            /** @var Router $router */
+            $router = $this->container->get('router');
+            return $response->withRedirect($router->pathFor('List_Bet'));
+        }
+
+        return $this->view->render($response, 'displayBet.html.twig', [
+            'bet' => $bet,
+        ]);
+    }
+
+    public function ajaxGetDataBet(Request $request, Response $response, $args)
+    {
+        $betId = $args['betId'];
+
+        $selectStatement = $this->database->select()
+            ->from('bet')
+            ->where('id', '=', $betId);
+        $bet = $selectStatement->execute()->fetch();
+
+        if(empty($bet)) {
+            return $response->withJson(['error' => 404]);
+        }
+
+        if (empty($_SESSION) || empty($_SESSION['user']) || empty($_SESSION['user']['id'])) {
+            $lastBet = $this->database->select()
+                ->from('bet')
+                ->orderBy('dateCreated', 'DESC')
+                ->limit(1, 0);
+
+            $lastBet = $lastBet->execute()->fetch();
+
+            if(empty($lastBet) || $lastBet['id'] != $bet['id']) {
+                return $response->withJson(['error' => 401]);
+            }
+        }
+
+        // Here I have a bet, that I'm allow to use, and that exist
+        $selectStatement = $this->database->select()
+            ->from('vote')
+            ->where('betId', '=', $bet['id']);
+        $votes = $selectStatement->execute()->fetchAll();
+
+        $selectStatement = $this->database->select()
+            ->from('answerType')
+            ->where('id', '=', $bet['answerTypeId']);
+        $answerType = $selectStatement->execute()->fetch();
+
+        $result = [];
+        foreach($votes as $vote) {
+            $key = null;
+            switch($answerType['type']) {
+                case 'date':
+                    $msg = substr($vote['answer'], 0, 10);
+                    $dateInfo = explode('/', $msg);
+                    $day = $dateInfo[0] ?? 0;
+                    $month = $dateInfo[1] ?? 0;
+                    $year = $dateInfo[2] ?? 0;
+
+                    if(!checkdate($month, $day, $year)) {
+                        continue 2;
+                    }
+                    $key = $year . '/' . $month . '/' . $day;
+                    break;
+            }
+
+            if(empty($result[$key])) {
+                $result[$key] = 1;
+            } else {
+                $result[$key] += 1;
+            }
+        }
+
+        ksort($result);
+
+        return $response->withJson(['key' => array_keys($result), 'series' => array_values($result)]);
+    }
+
     public function createBet(Request $request, Response $response)
     {
         $selectStatement = $this->database->select()

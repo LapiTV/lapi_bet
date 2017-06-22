@@ -5,27 +5,19 @@
         #graphHighchart {
             min-width: 320px;
             max-width: 600px;
-            margin: 100px auto;
+            margin: 0 auto;
         }
     </style>
 {% endblock %}
 
 {% block content %}
-    <div id="message" class="js--message" style="text-align: center; margin-top:10%; font-size:30px;">
-        {% if error %}
-            {{ error }}
-        {% endif %}
-    </div>
-    <div id="graphHighchart" data-bet-id="26">
-
-    </div>
-    <div class="js--data" style="display: none;">
-        <input type="hidden" id="time" value="{{ time }}">
+    <div class="container">
+        <div class="js--graph-live" id="graphHighchart" data-bet-id="{{ bet.id }}">
+        </div>
     </div>
 {% endblock %}
 
 {% block javascripts %}
-    <script src="/js/home.js"></script>
     <script src="/js/highcharts.js"></script>
     <script src="/js/highcharts-more.js"></script>
     <script src="/js/modules/exporting.js"></script>
