@@ -23,9 +23,17 @@ class HomeController extends BaseController
             $error = $ce->getMessage();
         }
 
+
+        $lastBet = $this->database->select()
+            ->from('bet')
+            ->orderBy('dateCreated', 'DESC')
+            ->limit(1, 0);
+        $lastBet = $lastBet->execute()->fetch();
+
         return $this->view->render($response, 'home.html.twig', [
             'time' => !empty($time) ? $time->getTimestamp() : null,
             'error' => $error ?? null,
+            'bet' => $lastBet
         ]);
     }
 

@@ -1,10 +1,29 @@
 $(function() {
+    var graphDiv = $('#graphHighchart');
+
+    var betId = graphDiv.data('betId');
+    var betTitle = graphDiv.data('betTitle');
+
     var chart = Highcharts.chart('graphHighchart', {
         title: {
-            text: 'Réponse'
+            text: betTitle
         },
 
-        xAxis: {},
+        xAxis: {
+            title: {
+                enabled: true,
+                text: 'Nombre de vote'
+            }
+        },
+
+        yAxis: {
+            title: {
+                enabled: true,
+                text: 'Réponses'
+            }
+        },
+
+        exporting: { enabled: false },
 
         series: [{
             type: 'column',
@@ -14,8 +33,6 @@ $(function() {
 
     });
 
-    var betId = $('#graphHighchart').data('betId');
-
     function updateChart() {
         $.get('/ajax/bet/' + betId, {}, function(data) {
             chart.update({
@@ -23,6 +40,7 @@ $(function() {
                     categories: data.key
                 },
                 series: [{
+                    name: 'Réponses',
                     data: data.series
                 }]
             });

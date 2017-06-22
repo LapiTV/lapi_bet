@@ -4,7 +4,7 @@
     <style type="text/css">
         #graphHighchart {
             min-width: 320px;
-            max-width: 600px;
+            max-width: 50%;
             margin: 100px auto;
         }
     </style>
@@ -16,9 +16,11 @@
             {{ error }}
         {% endif %}
     </div>
-    <div id="graphHighchart" data-bet-id="26">
+    {% if bet %}
+        <div id="graphHighchart" data-bet-id="{{ bet.id }}" data-bet-title="{{ bet.description }}">
 
-    </div>
+        </div>
+    {% endif %}
     <div class="js--data" style="display: none;">
         <input type="hidden" id="time" value="{{ time }}">
     </div>
