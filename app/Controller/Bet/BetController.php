@@ -17,6 +17,40 @@ use Slim\Router;
 
 class BetController extends BaseController
 {
+    public function listBetAction(Request $request, Response $response)
+    {
+        $selectStatement = $this->database->select()
+            ->from('answerType');
+        $answerTypes = $selectStatement->execute()->fetchAll();
+
+        $tmp = [];
+        foreach ($answerTypes as $answerType) {
+            $tmp[$answerType['id']] = $answerType['name'];
+        }
+        $answerTypes = $tmp;
+
+        $selectStatement = $this->database->select()
+            ->from('bet')
+            ->orderBy('dateCreated', 'DESC');
+        $bets = $selectStatement->execute()->fetchAll();
+
+        foreach ($bets as $key => $bet) {
+            $bets[$key]['inProgress'] = $this->isBetInProgress($bet['id']);
+            $bets[$key]['answerType'] = $answerTypes[$bet['answerTypeId']] ?? '';
+
+            $selectStatement = $this->database->select(['COUNT(*) as nbre'])
+                ->from('vote')
+                ->where('betId', '=', $bet['id']);
+            $votesNbr = $selectStatement->execute()->fetch();
+
+            $bets[$key]['voteNumber'] = $votesNbr['nbre'] ?? 0;
+        }
+
+        $this->view->render($response, 'listBet.html.twig', [
+            'bets' => $bets,
+        ]);
+    }
+
     public function createBet(Request $request, Response $response)
     {
         $selectStatement = $this->database->select()
@@ -105,7 +139,7 @@ class BetController extends BaseController
         }
     }
 
-    private function isBetInProgress()
+    private function isBetInProgress(int $id = null)
     {
         $lastBet = $this->database->select()
             ->from('bet')
@@ -115,6 +149,10 @@ class BetController extends BaseController
         $lastBet = $lastBet->execute()->fetch();
 
         if (empty($lastBet)) {
+            return false;
+        }
+
+        if (!empty($id) && $lastBet['id'] != $id) {
             return false;
         }
 

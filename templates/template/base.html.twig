@@ -37,6 +37,9 @@
                     <li {% if currentUrl == path_for('Create_Bet') %} class="active"{% endif %}>
                         <a href="{{ path_for('Create_Bet') }}">Ajouter un pari</a>
                     </li>
+                    <li {% if currentUrl == path_for('List_Bet') %} class="active"{% endif %}>
+                        <a href="{{ path_for('List_Bet') }}">Liste des paris</a>
+                    </li>
                     <li {% if currentUrl == path_for('Logout') %} class="active"{% endif %}>
                         <a href="{{ path_for('Logout') }}">Logout</a>
                     </li>

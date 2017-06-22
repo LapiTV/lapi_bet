@@ -1,0 +1,28 @@
+{% extends 'template/base.html.twig' %}
+
+{% block content %}
+    <div class="container">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Type de réponse</th>
+                <th>Durée</th>
+                <th>Date créée</th>
+                <th>Nombre de réponse</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for bet in bets %}
+                <tr>
+                    <td>{{ bet.name }} {% if bet.inProgress %}<span class="label label-success">In progress</span>{% endif %}</td>
+                    <td>{{ bet.answerType }}</td>
+                    <td>{{ bet.pariDurationMinute }}</td>
+                    <td>{{ bet.dateCreated }}</td>
+                    <td>{{ bet.voteNumber }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
