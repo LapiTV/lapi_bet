@@ -15,7 +15,7 @@ class Vote extends BaseManager
 {
     protected static $table = 'vote';
 
-    const THRESHOLD_DISPLAY = 0;
+    const THRESHOLD_DISPLAY = 5;
 
     public static function getVoteOf(int $betId)
     {
