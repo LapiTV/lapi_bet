@@ -19,9 +19,14 @@ class AnswerType extends BaseManager
             case 'date':
                 $msg = substr($message, 0, 10);
                 $dateInfo = explode('/', $msg);
+
                 $day = $dateInfo[0] ?? 0;
                 $month = $dateInfo[1] ?? 0;
                 $year = $dateInfo[2] ?? 0;
+
+                $day = self::parseNumber($day, 2);
+                $month = self::parseNumber($month, 2);
+                $year = self::parseNumber($year, 4);
 
                 if (!checkdate($month, $day, $year)) {
                     return false;
@@ -45,6 +50,12 @@ class AnswerType extends BaseManager
         }
 
         return false;
+    }
+
+    public static function parseNumber($number, $lengthRequired)
+    {
+        $number = substr($number, 0, $lengthRequired);
+        return str_pad($number, $lengthRequired, '0', STR_PAD_LEFT);
     }
 
     public static function calcDistance($type, $answer, $try)
