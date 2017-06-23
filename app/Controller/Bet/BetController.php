@@ -83,7 +83,7 @@ class BetController extends BaseController
             return $response->withJson(['error' => 404]);
         }
 
-        if (Manager\User::isLogin()) {
+        if (!Manager\User::isLogin()) {
             $lastBet = Manager\Bet::getLastBet();
 
             if(empty($lastBet) || $lastBet['id'] != $bet['id']) {
@@ -114,6 +114,17 @@ class BetController extends BaseController
                         continue 2;
                     }
                     $key = $year . '/' . $month . '/' . $day;
+                    break;
+                case 'int':
+                    $res = null;
+                    $get = preg_match('/^[0-9]+/', $vote['answer'], $res);
+
+                    if(empty($get)) {
+                        continue 2;
+                    }
+
+                    $key = (int) $res[0];
+
                     break;
             }
 
