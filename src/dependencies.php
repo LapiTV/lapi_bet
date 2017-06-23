@@ -41,5 +41,7 @@ $container['database'] = function ($c) {
 
     $pdo = new \Slim\PDO\Database($dsn, $usr, $pwd);
 
+    \Bet\App\Service\Database::setInstance($pdo);
+
     return $pdo;
 };

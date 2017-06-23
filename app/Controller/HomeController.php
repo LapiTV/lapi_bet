@@ -10,6 +10,7 @@ namespace Bet\App\Controller;
 
 
 use Bet\App\Exception\CustomException;
+use Bet\App\Manager;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -23,12 +24,7 @@ class HomeController extends BaseController
             $error = $ce->getMessage();
         }
 
-
-        $lastBet = $this->database->select()
-            ->from('bet')
-            ->orderBy('dateCreated', 'DESC')
-            ->limit(1, 0);
-        $lastBet = $lastBet->execute()->fetch();
+        $lastBet = Manager\Bet::getLastBet();
 
         return $this->view->render($response, 'home.html.twig', [
             'time' => !empty($time) ? $time->getTimestamp() : null,
@@ -43,12 +39,7 @@ class HomeController extends BaseController
      */
     private function getDateEnd()
     {
-        $lastBet = $this->database->select()
-            ->from('bet')
-            ->orderBy('dateCreated', 'DESC')
-            ->limit(1, 0);
-
-        $lastBet = $lastBet->execute()->fetch();
+        $lastBet = Manager\Bet::getLastBet();
 
         if (empty($lastBet)) {
             throw new CustomException('Il n\'y a pas de pari en cours.');

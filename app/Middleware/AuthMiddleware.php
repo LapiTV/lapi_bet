@@ -9,7 +9,10 @@
 namespace Bet\App\Middleware;
 
 
+use Bet\App\Manager;
 use Slim\Container;
+use Slim\Http\Request;
+use Slim\Http\Response;
 use Slim\Router;
 
 class AuthMiddleware
@@ -21,9 +24,9 @@ class AuthMiddleware
         $this->container = $container;
     }
 
-    public function __invoke($request, $response, $next)
+    public function __invoke(Request $request, Response $response, $next)
     {
-        if (empty($_SESSION) || empty($_SESSION['user']) || empty($_SESSION['user']['id'])) {
+        if (!Manager\User::isLogin()) {
             /** @var Router $router */
             $router = $this->container->get('router');
             return $response->withRedirect($router->pathFor('Login'));

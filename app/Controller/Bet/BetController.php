@@ -11,6 +11,7 @@ namespace Bet\App\Controller\Bet;
 
 use Bet\App\Controller\BaseController;
 use Bet\App\Exception\FormException;
+use Bet\App\Manager;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Router;
@@ -29,10 +30,7 @@ class BetController extends BaseController
         }
         $answerTypes = $tmp;
 
-        $selectStatement = $this->database->select()
-            ->from('bet')
-            ->orderBy('dateCreated', 'DESC');
-        $bets = $selectStatement->execute()->fetchAll();
+        $bets = Manager\Bet::getAll();
 
         foreach ($bets as $key => $bet) {
             $bets[$key]['inProgress'] = $this->isBetInProgress($bet['id']);
@@ -85,13 +83,8 @@ class BetController extends BaseController
             return $response->withJson(['error' => 404]);
         }
 
-        if (empty($_SESSION) || empty($_SESSION['user']) || empty($_SESSION['user']['id'])) {
-            $lastBet = $this->database->select()
-                ->from('bet')
-                ->orderBy('dateCreated', 'DESC')
-                ->limit(1, 0);
-
-            $lastBet = $lastBet->execute()->fetch();
+        if (Manager\User::isLogin()) {
+            $lastBet = Manager\Bet::getLastBet();
 
             if(empty($lastBet) || $lastBet['id'] != $bet['id']) {
                 return $response->withJson(['error' => 401]);
@@ -99,10 +92,7 @@ class BetController extends BaseController
         }
 
         // Here I have a bet, that I'm allow to use, and that exist
-        $selectStatement = $this->database->select()
-            ->from('vote')
-            ->where('betId', '=', $bet['id']);
-        $votes = $selectStatement->execute()->fetchAll();
+        $votes = Manager\Vote::getVoteOf($bet['id']);
 
         $selectStatement = $this->database->select()
             ->from('answerType')
@@ -141,10 +131,7 @@ class BetController extends BaseController
 
     public function createBet(Request $request, Response $response)
     {
-        $selectStatement = $this->database->select()
-            ->from('answerType');
-
-        $answerTypes = $selectStatement->execute()->fetchAll();
+        $answerTypes = Manager\AnswerType::getAll();
 
         $betInProgress = $this->isBetInProgress();
 
@@ -229,12 +216,7 @@ class BetController extends BaseController
 
     private function isBetInProgress(int $id = null)
     {
-        $lastBet = $this->database->select()
-            ->from('bet')
-            ->orderBy('dateCreated', 'DESC')
-            ->limit(1, 0);
-
-        $lastBet = $lastBet->execute()->fetch();
+        $lastBet = Manager\Bet::getLastBet();
 
         if (empty($lastBet)) {
             return false;
