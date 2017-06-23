@@ -31,14 +31,13 @@
         <h2>Info</h2>
         <p>
             <b>Nom</b> : {{ bet.name }}<br/>
-            <b>Description</b> : {{ bet.description }}<br/>
             <b>Type</b> : {{ bet.answerType.name }}<br/>
             <b>Début</b> : {{ bet.dateCreated }}<br/>
             <b>Durée</b> : {{ bet.pariDurationMinute }} minutes
         </p>
         <h2>Réponses</h2>
         <div class="js--graph-live" id="graphHighchart" data-live-update="{{ inProgress }}" data-bet-id="{{ bet.id }}"
-             data-bet-title="{{ bet.description }}">
+             data-bet-title="{{ bet.name }}">
         </div>
         <h2>Gagnant</h2>
         <form class="form-inline js--get-winner">

@@ -187,13 +187,11 @@ class BetController extends BaseController
 
         if ($request->getMethod() === 'POST') {
             $name = $request->getParam('name');
-            $description = $request->getParam('description', '');
             $answerType = $request->getParam('answerType');
             $durationMinute = $request->getParam('durationMinute');
 
             $create = [
                 'name' => $name,
-                'description' => $description,
                 'pariDurationMinute' => $durationMinute,
                 'answerTypeId' => $answerType,
             ];
