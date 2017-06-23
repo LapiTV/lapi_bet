@@ -26,7 +26,7 @@ class AnswerType extends BaseManager
                 if (!checkdate($month, $day, $year)) {
                     return false;
                 }
-                return $year . '/' . $month . '/' . $day;
+                return $day . '/' . $month . '/' . $year;
             case 'int':
                 $res = null;
                 $get = preg_match('/^[0-9]+/', $message, $res);
@@ -45,5 +45,41 @@ class AnswerType extends BaseManager
         }
 
         return false;
+    }
+
+    public static function calcDistance($type, $answer, $try)
+    {
+        switch ($type) {
+            case 'string':
+                return \levenshtein($answer, $try);
+            case 'int':
+                return \abs($answer - $try);
+            case 'date':
+                $answer = \DateTime::createFromFormat('d/m/Y', $answer);
+                $try = \DateTime::createFromFormat('d/m/Y', $try);
+
+                $interval = $answer->diff($try);
+
+                return abs((int)$interval->format('%R%a'));
+            default:
+                return 30;
+        }
+    }
+
+    public static function order($type, $array)
+    {
+        switch ($type) {
+            case 'date':
+                uksort($array, function($a, $b) {
+                    $a = \DateTime::createFromFormat('d/m/Y', $a);
+                    $b = \DateTime::createFromFormat('d/m/Y', $b);
+
+                    return $a <=> $b;
+                });
+                return $array;
+            default:
+                ksort($array);
+                return $array;
+        }
     }
 }

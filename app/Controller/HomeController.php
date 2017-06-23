@@ -19,6 +19,7 @@ class HomeController extends BaseController
     public function homeAction(Request $request, Response $response)
     {
         try {
+            // TODO: Use the one from Manager
             $time = $this->getDateEnd();
         } catch(CustomException $ce) {
             $error = $ce->getMessage();

@@ -52,7 +52,7 @@ class BetController extends BaseController
     {
         $bet = Manager\Bet::get($args['betId']);
 
-        if(empty($bet)) {
+        if (empty($bet)) {
             /** @var Router $router */
             $router = $this->container->get('router');
             return $response->withRedirect($router->pathFor('List_Bet'));
@@ -60,7 +60,7 @@ class BetController extends BaseController
 
         try {
             $time = Manager\Bet::getDateEnd($bet['id']);
-        } catch(CustomException $ce) {
+        } catch (CustomException $ce) {
             $error = $ce->getMessage();
         }
 
@@ -78,14 +78,14 @@ class BetController extends BaseController
     {
         $bet = Manager\Bet::get($args['betId']);
 
-        if(empty($bet)) {
+        if (empty($bet)) {
             return $response->withJson(['error' => 404]);
         }
 
         if (!Manager\User::isLogin()) {
             $lastBet = Manager\Bet::getLastBet();
 
-            if(empty($lastBet) || $lastBet['id'] != $bet['id']) {
+            if (empty($lastBet) || $lastBet['id'] != $bet['id']) {
                 return $response->withJson(['error' => 401]);
             }
         }
@@ -96,27 +96,83 @@ class BetController extends BaseController
         $answerType = Manager\AnswerType::get($bet['answerTypeId']);
 
         $result = [];
-        foreach($votes as $vote) {
+        foreach ($votes as $vote) {
             $key = Manager\AnswerType::parseMessage($answerType['type'], $vote['answer']);
 
-            if($key === false) {
+            if ($key === false) {
                 continue;
             }
 
-            if(empty($result[$key])) {
+            if (empty($result[$key])) {
                 $result[$key] = 1;
             } else {
                 $result[$key] += 1;
             }
         }
 
-        $result = array_filter($result, function($n) {
+        $result = array_filter($result, function ($n) {
             return $n > Manager\Vote::THRESHOLD_DISPLAY;
         });
 
-        ksort($result);
+        $result = Manager\AnswerType::order($answerType['type'], $result);
 
         return $response->withJson(['key' => array_keys($result), 'series' => array_values($result)]);
+    }
+
+    public function ajaxGetWinnerBet(Request $request, Response $response, $args)
+    {
+        $bet = Manager\Bet::get($args['betId']);
+
+        if (empty($bet)) {
+            return $response->withJson(['error' => 404]);
+        }
+
+        $answerType = Manager\AnswerType::get($bet['answerTypeId'])['type'] ?? 'string';
+
+        $correctAnswer = Manager\AnswerType::parseMessage($answerType, $request->getParam('answer'));
+
+        $votes = Manager\Vote::getVoteOf($bet['id']);
+
+        $res = [];
+
+        $minDistance = null;
+        foreach ($votes as $vote) {
+            $userAnswer = Manager\AnswerType::parseMessage($answerType, $vote['answer']);
+            $distance = Manager\AnswerType::calcDistance(
+                $answerType,
+                $correctAnswer,
+                $userAnswer
+            );
+
+            if(!isset($minDistance)) {
+                $minDistance = $distance;
+            }
+
+            if($distance < $minDistance) {
+                $minDistance = $distance;
+            }
+
+            $row = [
+                'username' => $vote['username'],
+                'date' => $vote['dateVote'],
+                'answer' => $userAnswer,
+                'distance' => $distance,
+                'random' => rand(0, 100),
+            ];
+
+            $res[] = $row;
+        }
+
+        usort($res, function($a, $b) {
+            $firstSort = $a['distance'] <=> $b['distance'];
+
+            if($firstSort === 0) {
+                return $a['random'] <=> $b['random'];
+            }
+            return $firstSort;
+        });
+
+        return $response->withJson(['table' => $res, 'minDistance' => $minDistance]);
     }
 
     public function createBet(Request $request, Response $response)

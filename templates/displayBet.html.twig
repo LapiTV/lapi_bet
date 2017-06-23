@@ -1,6 +1,7 @@
 {% extends 'template/base.html.twig' %}
 
 {% block stylesheets %}
+    <link rel="stylesheet" href="/css/pikaday.css">
     <style type="text/css">
         #graphHighchart {
             min-width: 320px;
@@ -24,7 +25,9 @@
 
 {% block content %}
     <div class="container">
-        <div id="message" class="duration_left js--live-message label label-info" data-type="clock" data-time="{{ time }}">00:00:00</div>
+        <div id="message" class="duration_left js--live-message label label-info" data-type="clock"
+             data-time="{{ time }}">00:00:00
+        </div>
         <h2>Info</h2>
         <p>
             <b>Nom</b> : {{ bet.name }}<br/>
@@ -38,13 +41,26 @@
              data-bet-title="{{ bet.description }}">
         </div>
         <h2>Gagnant</h2>
-        <form class="form-inline">
+        <form class="form-inline js--get-winner">
             <div class="form-group">
                 <label for="answer">Réponse</label>
-                <input type="text" class="form-control" id="answer" data-answer-type="{{ bet.answerType.type }}" placeholder="{{ bet.answerType.placeholder }}">
+                <input type="text" class="form-control" id="answer" data-answer-type="{{ bet.answerType.type }}"
+                       placeholder="{{ bet.answerType.placeholder }}">
             </div>
             <button type="submit" class="btn btn-default">Envoyer</button>
         </form>
+        <table class="table table-hovered table-striped js--table-answer">
+            <thead>
+            <tr>
+                <th>Pseudo</th>
+                <th>Réponse</th>
+                <th>Distance de la vrai réponse</th>
+                <th>Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
     </div>
 {% endblock %}
 
@@ -54,4 +70,55 @@
     <script src="/js/modules/exporting.js"></script>
     <script src="/js/liveTime.js"></script>
     <script src="/js/liveCharts.js"></script>
+    <script src="/js/pikaday.js"></script>
+    <script type="application/javascript">
+        $(function () {
+            var form = $('.js--get-winner');
+            var tableAnswer = $('.js--table-answer');
+            var tableBody = tableAnswer.find('tbody');
+
+            var type = form.find('#answer').data('answerType');
+            if (type === 'date') {
+                new Pikaday({
+                    format: 'DD/MM/YYYY',
+                    field: form.find('#answer')[0]
+                });
+            }
+
+            form.on('submit', function (e) {
+                e.preventDefault();
+
+                $.post('/ajax/bet/' + {{ bet.id }} +'/winner', {answer: form.find('#answer').val()}, function (data) {
+                    tableBody.html('');
+                    if (data.table) {
+                        data.table.map(function (e) {
+                            tableBody.append('<tr style="background-color: #' + gradient(e.distance, data.minDistance) + ';"><td>' + e.username + '</td><td>' + e.answer + '</td><td>' + e.distance + '</td><td>' + e.date + '</td></tr>');
+                        });
+                    }
+                });
+            });
+        });
+
+        function gradient(ratio, minDistance) {
+            ratio -= minDistance;
+            ratio /= 15;
+            if (ratio > 1) {
+                ratio = 1;
+            }
+
+            var color1 = 'd9534f';
+            var color2 = '4cae4c';
+
+            var r = Math.ceil(parseInt(color1.substring(0, 2), 16) * ratio + parseInt(color2.substring(0, 2), 16) * (1 - ratio));
+            var g = Math.ceil(parseInt(color1.substring(2, 4), 16) * ratio + parseInt(color2.substring(2, 4), 16) * (1 - ratio));
+            var b = Math.ceil(parseInt(color1.substring(4, 6), 16) * ratio + parseInt(color2.substring(4, 6), 16) * (1 - ratio));
+
+            return hex(r) + hex(g) + hex(b);
+        }
+
+        function hex(x) {
+            x = x.toString(16);
+            return (x.length == 1) ? '0' + x : x;
+        }
+    </script>
 {% endblock %}

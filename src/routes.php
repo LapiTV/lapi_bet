@@ -26,3 +26,7 @@ $app->group('/bet', function () use ($container) {
 
 $app->get('/ajax/bet/{betId:[0-9]+}', \Bet\App\Controller\Bet\BetController::class . ':ajaxGetDataBet')
     ->setName('Ajax_Get_Data_Bet');
+
+$app->post('/ajax/bet/{betId:[0-9]+}/winner', \Bet\App\Controller\Bet\BetController::class . ':ajaxGetWinnerBet')
+    ->setName('Ajax_Get_Winner_Bet')
+    ->add(new Bet\App\Middleware\AuthMiddleware($container));
