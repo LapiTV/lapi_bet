@@ -239,12 +239,6 @@ class BetController extends BaseController
             throw new FormException('Un pari est en cours.');
         }
 
-        $betSameName = $this->database->select()->from('bet')->where('name', '=', $data['name']);
-        $betSameName = $betSameName->execute()->fetch();
-        if (!empty($betSameName)) {
-            throw new FormException('Un pari existe déjà avec le même nom.');
-        }
-
         $insert = $this->database->insert(array_keys($data))
             ->into('bet')
             ->values(array_values($data));
