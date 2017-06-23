@@ -68,6 +68,7 @@ class BetController extends BaseController
 
         return $this->view->render($response, 'displayBet.html.twig', [
             'bet' => $bet,
+            'inProgress' => $this->isBetInProgress($bet['id']),
         ]);
     }
 

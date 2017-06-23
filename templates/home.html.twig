@@ -17,7 +17,7 @@
         {% endif %}
     </div>
     {% if bet %}
-        <div id="graphHighchart" data-bet-id="{{ bet.id }}" data-bet-title="{{ bet.description }}">
+        <div id="graphHighchart" data-bet-id="{{ bet.id }}" data-bet-title="{{ bet.description }}" {% if time %}data-live-update="true"{% endif %}>
 
         </div>
     {% endif %}

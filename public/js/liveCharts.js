@@ -3,6 +3,7 @@ $(function() {
 
     var betId = graphDiv.data('betId');
     var betTitle = graphDiv.data('betTitle');
+    var liveUpdate = graphDiv.data('liveUpdate');
 
     var chart = Highcharts.chart('graphHighchart', {
         title: {
@@ -48,5 +49,7 @@ $(function() {
     }
 
     updateChart();
-    setInterval(updateChart, 5000);
+    if(liveUpdate) {
+        setInterval(updateChart, 5000);
+    }
 });
