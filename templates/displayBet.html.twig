@@ -4,16 +4,38 @@
     <style type="text/css">
         #graphHighchart {
             min-width: 320px;
-            max-width: 600px;
+            max-width: 100%;
             margin: 0 auto;
+        }
+
+        .container {
+            margin-top: 10px;
         }
     </style>
 {% endblock %}
 
 {% block content %}
     <div class="container">
-        <div class="js--graph-live" id="graphHighchart" data-live-update="{{ inProgress }}" data-bet-id="{{ bet.id }}" data-bet-title="{{ bet.description }}">
+        <h2>Info</h2>
+        <p>
+            <b>Nom</b> : {{ bet.name }}<br/>
+            <b>Description</b> : {{ bet.description }}<br/>
+            <b>Type</b> : {{ bet.answerType.name }}<br/>
+            <b>Début</b> : {{ bet.dateCreated }}<br/>
+            <b>Durée</b> : {{ bet.pariDurationMinute }} minutes
+        </p>
+        <h2>Réponses</h2>
+        <div class="js--graph-live" id="graphHighchart" data-live-update="{{ inProgress }}" data-bet-id="{{ bet.id }}"
+             data-bet-title="{{ bet.description }}">
         </div>
+        <h2>Gagnant</h2>
+        <form class="form-inline">
+            <div class="form-group">
+                <label for="answer">Réponse</label>
+                <input type="text" class="form-control" id="answer" data-answer-type="{{ bet.answerType.type }}" placeholder="{{ bet.answerType.placeholder }}">
+            </div>
+            <button type="submit" class="btn btn-default">Envoyer</button>
+        </form>
     </div>
 {% endblock %}
 

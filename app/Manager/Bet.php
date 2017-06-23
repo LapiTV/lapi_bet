@@ -11,7 +11,7 @@ namespace Bet\App\Manager;
 
 use Bet\App\Service\Database;
 
-class Bet
+class Bet extends BaseManager
 {
     protected static $table = 'bet';
 
@@ -23,14 +23,5 @@ class Bet
             ->limit(1, 0);
 
         return $lastBet->execute()->fetch();
-    }
-
-    public static function getAll()
-    {
-        $selectStatement = Database::getInstance()->select()
-            ->from(self::$table)
-            ->orderBy('dateCreated', 'DESC');
-
-        return $selectStatement->execute()->fetchAll();
     }
 }

@@ -9,7 +9,7 @@
 namespace Bet\App\Manager;
 
 
-class User
+class User extends BaseManager
 {
     public static function isLogin()
     {

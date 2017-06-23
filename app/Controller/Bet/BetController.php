@@ -20,9 +20,7 @@ class BetController extends BaseController
 {
     public function listBetAction(Request $request, Response $response)
     {
-        $selectStatement = $this->database->select()
-            ->from('answerType');
-        $answerTypes = $selectStatement->execute()->fetchAll();
+        $answerTypes = Manager\AnswerType::getAll();
 
         $tmp = [];
         foreach ($answerTypes as $answerType) {
@@ -30,7 +28,7 @@ class BetController extends BaseController
         }
         $answerTypes = $tmp;
 
-        $bets = Manager\Bet::getAll();
+        $bets = Manager\Bet::getAll(['dateCreated' => 'DESC']);
 
         foreach ($bets as $key => $bet) {
             $bets[$key]['inProgress'] = $this->isBetInProgress($bet['id']);
@@ -51,18 +49,15 @@ class BetController extends BaseController
 
     public function displayBetAction(Request $request, Response $response, $args)
     {
-        $betId = $args['betId'];
-
-        $selectStatement = $this->database->select()
-            ->from('bet')
-            ->where('id', '=', $betId);
-        $bet = $selectStatement->execute()->fetch();
+        $bet = Manager\Bet::get($args['betId']);
 
         if(empty($bet)) {
             /** @var Router $router */
             $router = $this->container->get('router');
             return $response->withRedirect($router->pathFor('List_Bet'));
         }
+
+        $bet['answerType'] = Manager\AnswerType::get($bet['answerTypeId']);
 
         return $this->view->render($response, 'displayBet.html.twig', [
             'bet' => $bet,
@@ -72,12 +67,7 @@ class BetController extends BaseController
 
     public function ajaxGetDataBet(Request $request, Response $response, $args)
     {
-        $betId = $args['betId'];
-
-        $selectStatement = $this->database->select()
-            ->from('bet')
-            ->where('id', '=', $betId);
-        $bet = $selectStatement->execute()->fetch();
+        $bet = Manager\Bet::get($args['betId']);
 
         if(empty($bet)) {
             return $response->withJson(['error' => 404]);
@@ -91,18 +81,13 @@ class BetController extends BaseController
             }
         }
 
-        // Here I have a bet, that I'm allow to use, and that exist
+        // Here I have a bet, that I'm allow to use, and that exists
         $votes = Manager\Vote::getVoteOf($bet['id']);
 
-        $selectStatement = $this->database->select()
-            ->from('answerType')
-            ->where('id', '=', $bet['answerTypeId']);
-        $answerType = $selectStatement->execute()->fetch();
+        $answerType = Manager\AnswerType::get($bet['answerTypeId']);
 
         $result = [];
         foreach($votes as $vote) {
-            $key = null;
-
             $key = Manager\AnswerType::parseMessage($answerType['type'], $vote['answer']);
 
             if($key === false) {
@@ -149,11 +134,11 @@ class BetController extends BaseController
             ];
 
             try {
-                $this->addBet($create);
+                $betId = $this->addBet($create);
 
                 /** @var Router $router */
                 $router = $this->container->get('router');
-                return $response->withRedirect($router->pathFor('Home'));
+                return $response->withRedirect($router->pathFor('Display_Bet', ['betId' => $betId]));
             } catch (FormException $fe) {
                 $error = $fe->getMessage();
             } catch (\Exception $e) {
@@ -204,7 +189,7 @@ class BetController extends BaseController
         $insertId = $insert->execute();
 
         if (!empty($insertId)) {
-            return true;
+            return $insertId;
         } else {
             throw new \Exception('Couldnt create ' . json_encode($data));
         }

@@ -11,11 +11,11 @@ namespace Bet\App\Manager;
 
 use Bet\App\Service\Database;
 
-class Vote
+class Vote extends BaseManager
 {
     protected static $table = 'vote';
 
-    const THRESHOLD_DISPLAY = 2;
+    const THRESHOLD_DISPLAY = 0;
 
     public static function getVoteOf(int $betId)
     {
