@@ -15,6 +15,8 @@ class Vote
 {
     protected static $table = 'vote';
 
+    const THRESHOLD_DISPLAY = 2;
+
     public static function getVoteOf(int $betId)
     {
         $selectStatement = Database::getInstance()->select()

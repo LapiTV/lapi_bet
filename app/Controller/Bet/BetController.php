@@ -102,30 +102,11 @@ class BetController extends BaseController
         $result = [];
         foreach($votes as $vote) {
             $key = null;
-            switch($answerType['type']) {
-                case 'date':
-                    $msg = substr($vote['answer'], 0, 10);
-                    $dateInfo = explode('/', $msg);
-                    $day = $dateInfo[0] ?? 0;
-                    $month = $dateInfo[1] ?? 0;
-                    $year = $dateInfo[2] ?? 0;
 
-                    if(!checkdate($month, $day, $year)) {
-                        continue 2;
-                    }
-                    $key = $year . '/' . $month . '/' . $day;
-                    break;
-                case 'int':
-                    $res = null;
-                    $get = preg_match('/^[0-9]+/', $vote['answer'], $res);
+            $key = Manager\AnswerType::parseMessage($answerType['type'], $vote['answer']);
 
-                    if(empty($get)) {
-                        continue 2;
-                    }
-
-                    $key = (int) $res[0];
-
-                    break;
+            if($key === false) {
+                continue;
             }
 
             if(empty($result[$key])) {
@@ -134,6 +115,10 @@ class BetController extends BaseController
                 $result[$key] += 1;
             }
         }
+
+        $result = array_filter($result, function($n) {
+            return $n > Manager\Vote::THRESHOLD_DISPLAY;
+        });
 
         ksort($result);
 
