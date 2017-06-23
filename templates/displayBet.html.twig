@@ -11,11 +11,20 @@
         .container {
             margin-top: 10px;
         }
+
+        .duration_left {
+            position: relative;
+            right: 0px;
+            top: 0px;
+            float: right;
+            font-size: 15px;
+        }
     </style>
 {% endblock %}
 
 {% block content %}
     <div class="container">
+        <div id="message" class="duration_left js--live-message label label-info" data-type="clock" data-time="{{ time }}">00:00:00</div>
         <h2>Info</h2>
         <p>
             <b>Nom</b> : {{ bet.name }}<br/>
@@ -43,5 +52,6 @@
     <script src="/js/highcharts.js"></script>
     <script src="/js/highcharts-more.js"></script>
     <script src="/js/modules/exporting.js"></script>
+    <script src="/js/liveTime.js"></script>
     <script src="/js/liveCharts.js"></script>
 {% endblock %}

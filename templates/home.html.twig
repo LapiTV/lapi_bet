@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-    <div id="message" class="js--message" style="text-align: center; margin-top:10%; font-size:30px;">
+    <div id="message" class="js--live-message" data-type="phrase" data-time="{{ time }}" style="text-align: center; margin-top:10%; font-size:30px;">
         {% if error %}
             {{ error }}
         {% endif %}
@@ -21,15 +21,12 @@
 
         </div>
     {% endif %}
-    <div class="js--data" style="display: none;">
-        <input type="hidden" id="time" value="{{ time }}">
-    </div>
 {% endblock %}
 
 {% block javascripts %}
-    <script src="/js/home.js"></script>
     <script src="/js/highcharts.js"></script>
     <script src="/js/highcharts-more.js"></script>
     <script src="/js/modules/exporting.js"></script>
+    <script src="/js/liveTime.js"></script>
     <script src="/js/liveCharts.js"></script>
 {% endblock %}

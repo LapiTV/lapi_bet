@@ -10,6 +10,7 @@ namespace Bet\App\Controller\Bet;
 
 
 use Bet\App\Controller\BaseController;
+use Bet\App\Exception\CustomException;
 use Bet\App\Exception\FormException;
 use Bet\App\Manager;
 use Slim\Http\Request;
@@ -57,10 +58,18 @@ class BetController extends BaseController
             return $response->withRedirect($router->pathFor('List_Bet'));
         }
 
+        try {
+            $time = Manager\Bet::getDateEnd($bet['id']);
+        } catch(CustomException $ce) {
+            $error = $ce->getMessage();
+        }
+
         $bet['answerType'] = Manager\AnswerType::get($bet['answerTypeId']);
 
         return $this->view->render($response, 'displayBet.html.twig', [
             'bet' => $bet,
+            'time' => !empty($time) ? $time->getTimestamp() : null,
+            'error' => $error ?? null,
             'inProgress' => $this->isBetInProgress($bet['id']),
         ]);
     }
