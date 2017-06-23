@@ -18,7 +18,7 @@
                     <td><a href="{{ path_for('Display_Bet', {betId: bet.id}) }}">{{ bet.name }}</a> {% if bet.inProgress %}<span class="label label-success">In progress</span>{% endif %}</td>
                     <td>{{ bet.answerType }}</td>
                     <td>{{ bet.pariDurationMinute }}</td>
-                    <td>{{ bet.dateCreated }}</td>
+                    <td>{{ bet.dateCreated|date('d/m/Y H:i:s') }}</td>
                     <td>{{ bet.voteNumber }}</td>
                 </tr>
             {% endfor %}
