@@ -13,6 +13,7 @@ use Bet\App\Controller\BaseController;
 use Bet\App\Exception\CustomException;
 use Bet\App\Exception\FormException;
 use Bet\App\Manager;
+use Bet\App\Service\SmsNotification;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Router;
@@ -244,6 +245,7 @@ class BetController extends BaseController
             ->values(array_values($data));
 
         $insertId = $insert->execute();
+        SmsNotification::sendSms('Ajout d\'un vote ! ' . $data['name']);
 
         if (!empty($insertId)) {
             return $insertId;
