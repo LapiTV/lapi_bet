@@ -13,14 +13,14 @@ $(function() {
         xAxis: {
             title: {
                 enabled: true,
-                text: 'Nombre de vote'
+                text: 'Réponses'
             }
         },
 
         yAxis: {
             title: {
                 enabled: true,
-                text: 'Réponses'
+                text: 'Nombre de vote'
             }
         },
 
