@@ -31,7 +31,6 @@ class SmsNotification
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
             $data = curl_exec($ch);
-            var_dump($data);
 
             curl_close($ch);
         } catch(\Exception $e) {}
