@@ -111,6 +111,22 @@ class BetController extends BaseController
             }
         }
 
+        if($answerType['type'] === 'int') {
+            $finalResult = [];
+            // Ranges
+            foreach($result as $key => $number) {
+                $range = (int) floor($key / 10) * 10;
+
+                if(empty($finalResult[$range])) {
+                    $finalResult[$range] = $number;
+                } else {
+                    $finalResult[$range] += $number;
+                }
+            }
+
+            $result = $finalResult;
+        }
+
         $result = array_filter($result, function ($n) {
             return $n > Manager\Vote::THRESHOLD_DISPLAY;
         });
