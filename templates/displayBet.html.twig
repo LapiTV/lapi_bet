@@ -39,7 +39,23 @@
         <div class="js--graph-live" id="graphHighchart" data-live-update="{{ inProgress }}" data-bet-id="{{ bet.id }}"
              data-bet-title="{{ bet.name }}">
         </div>
-        <h2>Gagnant</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Gagnant</h2>
+            </div>
+            <div class="col-md-6">
+                <div style="float:right">
+                    <div class="onoffswitch">
+                        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="oneWinner"
+                               checked>
+                        <label class="onoffswitch-label" for="oneWinner">
+                            <span class="onoffswitch-inner"></span>
+                            <span class="onoffswitch-switch"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
         <form class="form-inline js--get-winner">
             <div class="form-group">
                 <label for="answer">Réponse</label>
@@ -48,18 +64,25 @@
             </div>
             <button type="submit" class="btn btn-default">Envoyer</button>
         </form>
-        <table class="table table-hovered table-striped js--table-answer">
-            <thead>
-            <tr>
-                <th>Pseudo</th>
-                <th>Réponse</th>
-                <th>Distance de la vrai réponse</th>
-                <th>Date</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+        <div class="row js--one-winner" style="margin-bottom: 10px; height:400px; width:100%;">
+            <div class="js--display-dice" style="display:none; padding-top:20px;height:380px;width:100%;">
+            </div>
+            <div class="js--display-winner col-sm-12" style="display:none;text-align:center;line-height:400px;width:100%;height:400px;font-size:30px;">Bravo <strong>isak59</strong> !</div>
+        </div>
+        <div class="row js--all-winners" style="display:none;">
+            <table class="table table-hovered table-striped js--table-answer">
+                <thead>
+                <tr>
+                    <th>Pseudo</th>
+                    <th>Réponse</th>
+                    <th>Distance de la vrai réponse</th>
+                    <th>Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}
 
@@ -74,7 +97,11 @@
         $(function () {
             var form = $('.js--get-winner');
             var tableAnswer = $('.js--table-answer');
+            var displayWinner = $('.js--display-winner');
+            var displayDice = $('.js--display-dice');
+            var addDice = $('.js--add-dice');
             var tableBody = tableAnswer.find('tbody');
+            var oneWinner = true;
 
             var type = form.find('#answer').data('answerType');
             if (type === 'date') {
@@ -86,16 +113,42 @@
 
             form.on('submit', function (e) {
                 e.preventDefault();
+                displayDice.hide();
+                displayWinner.hide();
 
                 $.post('/ajax/bet/' + {{ bet.id }} +'/winner', {answer: form.find('#answer').val()}, function (data) {
-                    tableBody.html('');
-                    if (data.table) {
-                        data.table.map(function (e) {
-                            tableBody.append('<tr style="background-color: #' + gradient(e.distance, data.minDistance) + ';"><td>' + e.username + '</td><td>' + e.answer + '</td><td>' + e.distance + '</td><td>' + e.date + '</td></tr>');
-                        });
+                    if (oneWinner) {
+                        displayDice.show();
+                        displayDice.html('<div style="margin-left:auto;margin-right:auto;width:480px;height:360px;"><img src="https://media.giphy.com/media/6wRAJMOXqSGCk/giphy.gif"></div>');
+                        setTimeout(function () {
+                            displayDice.html('');
+                            displayDice.hide();
+                            displayWinner.show();
+                            var winner = data.table[0];
+                            displayWinner.html('Bravo <strong>' + winner.username + '</strong> !');
+                        }, 9 * 1000);
+                    } else {
+                        tableBody.html('');
+                        if (data.table) {
+                            data.table.map(function (e) {
+                                tableBody.append('<tr style="background-color: #' + gradient(e.distance, data.minDistance) + ';"><td>' + e.username + '</td><td>' + e.answer + '</td><td>' + e.distance + '</td><td>' + e.date + '</td></tr>');
+                            });
+                        }
                     }
                 });
             });
+
+            $('#oneWinner').on('change', function () {
+                if ($(this).is(':checked')) {
+                    oneWinner = true;
+                    $('.js--one-winner').show();
+                    $('.js--all-winners').hide();
+                } else {
+                    oneWinner = false;
+                    $('.js--one-winner').hide();
+                    $('.js--all-winners').show();
+                }
+            })
         });
 
         function gradient(ratio, minDistance) {

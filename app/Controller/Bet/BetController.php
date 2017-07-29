@@ -111,7 +111,7 @@ class BetController extends BaseController
             }
         }
 
-        if($answerType['type'] === 'int') {
+        /*if($answerType['type'] === 'int') {
             $finalResult = [];
             // Ranges
             foreach($result as $key => $number) {
@@ -125,7 +125,7 @@ class BetController extends BaseController
             }
 
             $result = $finalResult;
-        }
+        }*/
 
         $result = array_filter($result, function ($n) {
             return $n > Manager\Vote::THRESHOLD_DISPLAY;
