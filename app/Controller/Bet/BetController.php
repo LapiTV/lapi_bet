@@ -14,6 +14,7 @@ use Bet\App\Exception\CustomException;
 use Bet\App\Exception\FormException;
 use Bet\App\Manager;
 use Bet\App\Service\SmsNotification;
+use Bet\App\Service\Util;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Router;
@@ -111,11 +112,13 @@ class BetController extends BaseController
             }
         }
 
-        /*if($answerType['type'] === 'int') {
+        $parameter = json_decode($bet['parameter']);
+
+        if(!empty($parameter) && !empty($parameter->roundTo) && $answerType['type'] === 'int') {
             $finalResult = [];
             // Ranges
             foreach($result as $key => $number) {
-                $range = (int) floor($key / 10) * 10;
+                $range = Util::roundDownToAny($key, $parameter->roundTo);
 
                 if(empty($finalResult[$range])) {
                     $finalResult[$range] = $number;
@@ -125,7 +128,7 @@ class BetController extends BaseController
             }
 
             $result = $finalResult;
-        }*/
+        }
 
         $result = array_filter($result, function ($n) {
             return $n > Manager\Vote::THRESHOLD_DISPLAY;
