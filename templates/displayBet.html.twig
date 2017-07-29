@@ -62,13 +62,16 @@
                     <td>
                         <div class="form-group">
                             <label for="answer">Réponse</label>
-                            <input type="text" class="form-control" id="answer" data-answer-type="{{ bet.answerType.type }}"
+                            <input type="text" class="form-control" id="answer"
+                                   data-answer-type="{{ bet.answerType.type }}"
                                    placeholder="{{ bet.answerType.placeholder }}">
                         </div>
                     </td>
-                    <td rowspan="2"><button type="submit" class="btn btn-default">Envoyer</button></td>
+                    <td>
+                        <button type="submit" class="btn btn-default">Envoyer</button>
+                    </td>
                 </tr>
-                <tr>
+                <tr class="js--require-login">
                     <td>
                         <div class="checkbox">
                             <label>
@@ -82,7 +85,8 @@
         <div class="row js--one-winner" style="margin-bottom: 10px; height:400px; width:100%;">
             <div class="js--display-dice" style="display:none; padding-top:20px;height:380px;width:100%;">
             </div>
-            <div class="js--display-winner col-sm-12" style="display:none;text-align:center;line-height:400px;width:100%;height:400px;font-size:30px;"></div>
+            <div class="js--display-winner col-sm-12"
+                 style="display:none;text-align:center;line-height:400px;width:100%;height:400px;font-size:30px;"></div>
         </div>
         <div class="row js--all-winners" style="display:none;">
             <table class="table table-hovered table-striped js--table-answer">
@@ -131,40 +135,53 @@
                 displayDice.hide();
                 displayWinner.hide();
 
-                $.post('/ajax/bet/' + {{ bet.id }} +'/winner', {answer: form.find('#answer').val(), login: form.find('#requiredLogged').is(':checked')}, function (data) {
-                    if (oneWinner) {
-                        displayDice.show();
-                        displayDice.html('<div style="margin-left:auto;margin-right:auto;width:480px;height:360px;"><img src="https://media.giphy.com/media/6wRAJMOXqSGCk/giphy.gif"></div>');
-                        setTimeout(function () {
+                var callback = function(data) {};
+
+                var timeRemaining = new Date().getTime();
+                if (oneWinner) {
+                    displayDice.show();
+                    displayDice.html('<div style="margin-left:auto;margin-right:auto;width:480px;height:360px;"><img src="https://media.giphy.com/media/6wRAJMOXqSGCk/giphy.gif"></div>');
+                    callback = function(data) {
+                        setTimeout(function() {
                             displayDice.html('');
                             displayDice.hide();
                             displayWinner.show();
 
                             displayWinner.html('Bravo <strong>' + data.winner + '</strong> !');
-                        }, 9 * 1000);
-                    } else {
+                        }, (10 * 1000) - (new Date().getTime() - timeRemaining));
+                    };
+                } else {
+                    tableBody.html('<tr><td colspan="4"><div style="display:flex;justify-content:center;align-items:center;font-size: 30px;margin: 25px;width:100%;"><i class="fa fa-lg fa-spinner fa-spin"></i></div></td></tr>');
+                    callback = function(data) {
                         tableBody.html('');
                         if (data.table) {
                             data.table.map(function (e) {
                                 var online = '';
-                                if(e.online) {
+                                if (e.online) {
                                     online = '<span class="label label-success">Online</span>';
                                 }
                                 tableBody.append('<tr style="background-color: #' + gradient(e.distance, data.minDistance) + ';"><td>' + e.username + ' ' + online + '</td><td>' + e.answer + '</td><td>' + e.distance + '</td><td>' + e.date + '</td></tr>');
                             });
                         }
-                    }
-                });
+                    };
+                }
+
+                $.post('/ajax/bet/' + {{ bet.id }} +'/winner', {
+                    answer: form.find('#answer').val(),
+                    login: form.find('#requiredLogged').is(':checked')
+                }, callback);
             });
 
             $('#oneWinner').on('change', function () {
                 if ($(this).is(':checked')) {
                     oneWinner = true;
                     $('.js--one-winner').show();
+                    $('.js--require-login').show();
                     $('.js--all-winners').hide();
                 } else {
                     oneWinner = false;
                     $('.js--one-winner').hide();
+                    $('.js--require-login').hide();
                     $('.js--all-winners').show();
                 }
             })
