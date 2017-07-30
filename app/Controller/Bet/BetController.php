@@ -251,7 +251,7 @@ class BetController extends BaseController
             }
         }
 
-        $this->view->render($response, 'createBet.html.twig', [
+        return $this->view->render($response, 'createBet.html.twig', [
             'answerTypes' => $answerTypes,
             'error' => $error ?? '',
             'data' => $create ?? [],

@@ -136,11 +136,25 @@
 
                 var callback = function(data) {};
 
+                var displayTable = function(data) {
+                    tableBody.html('');
+                    if (data.table) {
+                        data.table.map(function (e) {
+                            var online = '';
+                            if (e.online) {
+                                online = '<span class="label label-success">Online</span>';
+                            }
+                            tableBody.append('<tr style="background-color: #' + gradient(e.distance, data.minDistance) + ';"><td>' + e.username + ' ' + online + '</td><td>' + e.answer + '</td><td>' + e.distance + '</td><td>' + e.date + '</td></tr>');
+                        });
+                    }
+                };
+
                 var timeRemaining = new Date().getTime();
                 if (oneWinner) {
                     displayDice.show();
                     displayDice.html('<div style="margin-left:auto;margin-right:auto;width:480px;height:360px;"><img src="https://media.giphy.com/media/6wRAJMOXqSGCk/giphy.gif"></div>');
                     callback = function(data) {
+                        displayTable(data);
                         setTimeout(function() {
                             displayDice.html('');
                             displayDice.hide();
@@ -151,18 +165,7 @@
                     };
                 } else {
                     tableBody.html('<tr><td colspan="4"><div style="display:flex;justify-content:center;align-items:center;font-size: 30px;margin: 25px;width:100%;"><i class="fa fa-lg fa-spinner fa-spin"></i></div></td></tr>');
-                    callback = function(data) {
-                        tableBody.html('');
-                        if (data.table) {
-                            data.table.map(function (e) {
-                                var online = '';
-                                if (e.online) {
-                                    online = '<span class="label label-success">Online</span>';
-                                }
-                                tableBody.append('<tr style="background-color: #' + gradient(e.distance, data.minDistance) + ';"><td>' + e.username + ' ' + online + '</td><td>' + e.answer + '</td><td>' + e.distance + '</td><td>' + e.date + '</td></tr>');
-                            });
-                        }
-                    };
+                    callback = displayTable;
                 }
 
                 $.post('/ajax/bet/' + {{ bet.id }} +'/winner', {
