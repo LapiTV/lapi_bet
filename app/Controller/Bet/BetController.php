@@ -221,12 +221,17 @@ class BetController extends BaseController
             $name = $request->getParam('name');
             $answerType = $request->getParam('answerType');
             $durationMinute = $request->getParam('durationMinute');
+            $roundTo = $request->getParam('roundTo');
 
             $create = [
                 'name' => $name,
                 'pariDurationMinute' => $durationMinute,
                 'answerTypeId' => $answerType,
             ];
+
+            if(!empty($roundTo)) {
+                $create['parameter'] = json_encode(['roundTo' => (int) $roundTo]);
+            }
 
             try {
                 $betId = $this->addBet($create);
