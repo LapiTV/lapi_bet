@@ -18,12 +18,13 @@ class Bet extends BaseManager
 
     private static $fieldSup = [
         'TIMESTAMPDIFF(SECOND, dateCreated, now()) as timeCreated',
-        'DATE_ADD(dateCreated, INTERVAL pariDurationMinute MINUTE) as dateEnd', 'now() as dateNow'
+        'DATE_ADD(dateCreated, INTERVAL pariDurationMinute MINUTE) as dateEnd',
+        'now() as dateNow'
     ];
 
     public static function get(int $id)
     {
-            $selectStatement = Database::getInstance()->select(['*'] + self::$fieldSup)
+            $selectStatement = Database::getInstance()->select(array_merge(['*'], self::$fieldSup))
             ->from(static::$table)
             ->where('id', '=', $id);
 
@@ -32,7 +33,7 @@ class Bet extends BaseManager
 
     public static function getLastBet()
     {
-        $lastBet = Database::getInstance()->select(['*'] + self::$fieldSup)
+        $lastBet = Database::getInstance()->select(array_merge(['*'], self::$fieldSup))
             ->from(self::$table)
             ->orderBy('dateCreated', 'DESC')
             ->limit(1, 0);
