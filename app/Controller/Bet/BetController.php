@@ -158,7 +158,7 @@ class BetController extends BaseController
 
         $minDistance = null;
 
-        $usersOnline = Util::getUserOnline();
+//        $usersOnline = Util::getUserOnline();
         foreach ($votes as $vote) {
             $userAnswer = Manager\AnswerType::parseMessage($answerType, $vote['answer']);
             $distance = Manager\AnswerType::calcDistance(
@@ -180,7 +180,7 @@ class BetController extends BaseController
                 'date' => $vote['dateVote'],
                 'answer' => $userAnswer,
                 'distance' => $distance,
-                'online' => in_array($vote['username'], $usersOnline),
+//                'online' => in_array($vote['username'], $usersOnline),
                 'random' => rand(0, 100),
             ];
 
@@ -197,12 +197,12 @@ class BetController extends BaseController
         });
 
         $winner = $res[0]['username'];
-        for($i = 0; count($res); $i++) {
-            if(!$requiredLogin || $res[$i]['online']) {
-                $winner = $res[$i]['username'];
-                break;
-            }
-        }
+//        for($i = 0; count($res); $i++) {
+//            if(!$requiredLogin || $res[$i]['online']) {
+//                $winner = $res[$i]['username'];
+//                break;
+//            }
+//        }
 
         return $response->withJson(['table' => $res, 'winner' => $winner, 'minDistance' => $minDistance]);
     }
