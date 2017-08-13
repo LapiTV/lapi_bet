@@ -70,6 +70,7 @@ class BetController extends BaseController
 
         return $this->view->render($response, 'displayBet.html.twig', [
             'bet' => $bet,
+            'dateNow' => (new \DateTime($bet['dateNow']))->getTimestamp(),
             'time' => !empty($time) ? $time->getTimestamp() : null,
             'error' => $error ?? null,
             'inProgress' => $this->isBetInProgress($bet['id']),
@@ -114,13 +115,13 @@ class BetController extends BaseController
 
         $parameter = json_decode($bet['parameter']);
 
-        if(!empty($parameter) && !empty($parameter->roundTo) && $answerType['type'] === 'int') {
+        if (!empty($parameter) && !empty($parameter->roundTo) && $answerType['type'] === 'int') {
             $finalResult = [];
             // Ranges
-            foreach($result as $key => $number) {
+            foreach ($result as $key => $number) {
                 $range = Util::roundDownToAny($key, $parameter->roundTo);
 
-                if(empty($finalResult[$range])) {
+                if (empty($finalResult[$range])) {
                     $finalResult[$range] = $number;
                 } else {
                     $finalResult[$range] += $number;
@@ -167,11 +168,11 @@ class BetController extends BaseController
                 $userAnswer
             );
 
-            if(!isset($minDistance)) {
+            if (!isset($minDistance)) {
                 $minDistance = $distance;
             }
 
-            if($distance < $minDistance) {
+            if ($distance < $minDistance) {
                 $minDistance = $distance;
             }
 
@@ -187,10 +188,10 @@ class BetController extends BaseController
             $res[] = $row;
         }
 
-        usort($res, function($a, $b) {
+        usort($res, function ($a, $b) {
             $firstSort = $a['distance'] <=> $b['distance'];
 
-            if($firstSort === 0) {
+            if ($firstSort === 0) {
                 return $a['random'] <=> $b['random'];
             }
             return $firstSort;
@@ -229,8 +230,8 @@ class BetController extends BaseController
                 'answerTypeId' => $answerType,
             ];
 
-            if(!empty($roundTo)) {
-                $create['parameter'] = json_encode(['roundTo' => (int) $roundTo]);
+            if (!empty($roundTo)) {
+                $create['parameter'] = json_encode(['roundTo' => (int)$roundTo]);
             }
 
             try {
@@ -302,11 +303,17 @@ class BetController extends BaseController
             return false;
         }
 
-        $dateCreated = new \DateTime($lastBet['dateCreated']);
-        $interval = new \DateInterval('PT' . $lastBet['pariDurationMinute'] . 'M');
+        $timeCreated = $lastBet['timeCreated'];
+        $duration = $lastBet['pariDurationMinute'] * 60;
+        $timeLeft = $duration - $timeCreated;
 
-        $dateEnd = $dateCreated->add($interval);
+        return $timeLeft > 0;
 
-        return $dateEnd > new \DateTime();
+//        $dateCreated = new \DateTime($lastBet['dateCreated']);
+//        $interval = new \DateInterval('PT' . $lastBet['pariDurationMinute'] . 'M');
+//
+//        $dateEnd = $dateCreated->add($interval);
+//
+//        return $dateEnd > new \DateTime();
     }
 }

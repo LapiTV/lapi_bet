@@ -29,6 +29,7 @@ class HomeController extends BaseController
 
         return $this->view->render($response, 'home.html.twig', [
             'time' => !empty($time) ? $time->getTimestamp() : null,
+            'dateNow' => (new \DateTime($lastBet['dateNow']))->getTimestamp(),
             'error' => $error ?? null,
             'bet' => $lastBet
         ]);

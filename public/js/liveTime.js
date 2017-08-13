@@ -22,11 +22,15 @@ var timerBet = {
     init: function () {
         this.betEnd = moment.tz(parseInt(this.target.data('time') * 1000), 'Etc/UTC');
         this.messageType = this.target.data('type');
+
+        var dateNow = moment.tz(parseInt(this.target.data('now') * 1000), 'Etc/UTC');
+        var currentTime = moment.utc();
+
+        this.differenceBetweenDateNow = moment.duration(dateNow.diff(currentTime));
     },
 
     updateText: function () {
-        var currentTime = moment.utc();
-
+        var currentTime = moment.utc().add(this.differenceBetweenDateNow);
         var duration = moment.duration(this.betEnd.diff(currentTime));
 
         var text = '';
@@ -36,7 +40,6 @@ var timerBet = {
             clearInterval(this.cursorInterval);
         } else {
             if (this.messageType === 'clock') {
-                console.log(duration.hours());
                 text = pad_left_with_zeroes(duration.hours()) + ':' + pad_left_with_zeroes(duration.minutes()) + ':' + pad_left_with_zeroes(duration.seconds());
             } else {
                 text = parseDurationText(duration);

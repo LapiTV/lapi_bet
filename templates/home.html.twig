@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-    <div id="message" class="js--live-message" data-type="phrase" data-time="{{ time }}" style="text-align: center; margin-top:10%; font-size:30px;">
+    <div id="message" class="js--live-message" data-type="phrase" data-time="{{ time }}" data-now="{{ dateNow }}" style="text-align: center; margin-top:10%; font-size:30px;">
         {% if error %}
             {{ error }}
         {% endif %}
