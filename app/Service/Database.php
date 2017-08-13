@@ -26,4 +26,12 @@ class Database
     {
         return self::$database;
     }
+
+    public static function getTimeDatabase()
+    {
+        $stmt = self::$database->query('SELECT now() as now;');
+        $stmt->execute();
+
+        return $stmt->fetch()['now'];
+    }
 }

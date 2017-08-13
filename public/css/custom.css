@@ -13,11 +13,13 @@ body {
     color: #555;
     margin-bottom: 80px !important;
 }
+
 .container {
     margin-top: 100px;
     margin-left: auto;
     margin-right: auto;
 }
+
 h1,
 h2,
 strong,
@@ -26,8 +28,9 @@ a {
 }
 
 .title {
-    text-align:center;
+    text-align: center;
 }
+
 .footer {
     position: absolute;
     bottom: 0;
@@ -46,48 +49,89 @@ a {
 }
 
 .onoffswitch {
-    position: relative; width: 117px;
-    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+    position: relative;
+    width: 117px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
+
 .onoffswitch-checkbox {
     display: none;
 }
+
 .onoffswitch-label {
-    display: block; overflow: hidden; cursor: pointer;
-    border: 2px solid #999999; border-radius: 50px;
+    display: block;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid #999999;
+    border-radius: 50px;
 }
+
 .onoffswitch-inner {
-    display: block; width: 200%; margin-left: -100%;
+    display: block;
+    width: 200%;
+    margin-left: -100%;
     transition: margin 0.3s ease-in 0s;
 }
+
 .onoffswitch-inner:before, .onoffswitch-inner:after {
-    display: block; float: left; width: 50%; height: 24px; padding: 0; line-height: 24px;
-    font-size: 18px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+    display: block;
+    float: left;
+    width: 50%;
+    height: 24px;
+    padding: 0;
+    line-height: 24px;
+    font-size: 18px;
+    color: white;
+    font-family: Trebuchet, Arial, sans-serif;
+    font-weight: bold;
     box-sizing: border-box;
 }
+
 .onoffswitch-inner:before {
     content: "Un seul";
     padding-left: 12px;
-    background-color: #EEEEEE; color: #34A7C1;
+    background-color: #EEEEEE;
+    color: #34A7C1;
 }
+
 .onoffswitch-inner:after {
     content: "Tous";
     padding-right: 12px;
-    background-color: #EEEEEE; color: #999999;
+    background-color: #EEEEEE;
+    color: #999999;
     text-align: right;
 }
+
 .onoffswitch-switch {
-    display: block; width: 30px; margin: -3px;
+    display: block;
+    width: 30px;
+    margin: -3px;
     background: #A1A1A1;
-    position: absolute; top: 0; bottom: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
     right: 89px;
-    border: 2px solid #999999; border-radius: 50px;
+    border: 2px solid #999999;
+    border-radius: 50px;
     transition: all 0.3s ease-in 0s;
 }
+
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
     margin-left: 0;
 }
+
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
     right: 0px;
     background-color: #34A7C1;
+}
+
+.refresh_me {
+    cursor: pointer;
+}
+
+.refresh_icon:not(.refresh_me) {
+    -webkit-animation: fa-spin 2s infinite linear;
+    animation: fa-spin 2s infinite linear;
 }

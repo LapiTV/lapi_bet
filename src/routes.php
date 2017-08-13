@@ -30,3 +30,7 @@ $app->get('/ajax/bet/{betId:[0-9]+}', \Bet\App\Controller\Bet\BetController::cla
 $app->post('/ajax/bet/{betId:[0-9]+}/winner', \Bet\App\Controller\Bet\BetController::class . ':ajaxGetWinnerBet')
     ->setName('Ajax_Get_Winner_Bet')
     ->add(new Bet\App\Middleware\AuthMiddleware($container));
+
+$app->post('/ajax/message', \Bet\App\Controller\UserController::class . ':ajaxGetMessageWinner')
+    ->setName('Ajax_Get_Message_User')
+    ->add(new Bet\App\Middleware\AuthMiddleware($container));

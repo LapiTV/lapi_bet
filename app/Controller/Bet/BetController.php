@@ -13,6 +13,7 @@ use Bet\App\Controller\BaseController;
 use Bet\App\Exception\CustomException;
 use Bet\App\Exception\FormException;
 use Bet\App\Manager;
+use Bet\App\Service\Database;
 use Bet\App\Service\SmsNotification;
 use Bet\App\Service\Util;
 use Slim\Http\Request;
@@ -205,7 +206,7 @@ class BetController extends BaseController
 //            }
 //        }
 
-        return $response->withJson(['table' => $res, 'winner' => $winner, 'minDistance' => $minDistance]);
+        return $response->withJson(['table' => $res, 'winner' => $winner, 'minDistance' => $minDistance, 'now' => Database::getTimeDatabase()]);
     }
 
     public function createBet(Request $request, Response $response)
@@ -308,12 +309,5 @@ class BetController extends BaseController
         $timeLeft = $duration - $timeCreated;
 
         return $timeLeft > 0;
-
-//        $dateCreated = new \DateTime($lastBet['dateCreated']);
-//        $interval = new \DateInterval('PT' . $lastBet['pariDurationMinute'] . 'M');
-//
-//        $dateEnd = $dateCreated->add($interval);
-//
-//        return $dateEnd > new \DateTime();
     }
 }

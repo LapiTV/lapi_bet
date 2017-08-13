@@ -18,6 +18,7 @@ return [
             'level' => \Monolog\Logger::DEBUG,
         ],
 
-        'database' => \Symfony\Component\Yaml\Yaml::parse(file_get_contents(__DIR__ . '/db.yaml'))['database']
+        'database' => \Symfony\Component\Yaml\Yaml::parse(file_get_contents(__DIR__ . '/db.yaml'))['database'],
+        'databaseMessage' => \Symfony\Component\Yaml\Yaml::parse(file_get_contents(__DIR__ . '/db.yaml'))['databaseMessage'],
     ],
 ];

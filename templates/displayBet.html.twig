@@ -71,22 +71,24 @@
                         <button type="submit" class="btn btn-default">Envoyer</button>
                     </td>
                 </tr>
-                {#<tr class="js--require-login">#}
-                    {#<td>#}
-                        {#<div class="checkbox">#}
-                            {#<label>#}
-                                {#<input type="checkbox" id="requiredLogged"> Connecté ?#}
-                            {#</label>#}
-                        {#</div>#}
-                    {#</td>#}
-                {#</tr>#}
             </table>
         </form>
         <div class="row js--one-winner" style="margin-bottom: 10px; height:400px; width:100%;">
             <div class="js--display-dice" style="display:none; padding-top:20px;height:380px;width:100%;">
             </div>
             <div class="js--display-winner col-sm-12"
-                 style="display:none;text-align:center;line-height:400px;width:100%;height:400px;font-size:30px;"></div>
+                 style="display:none;text-align:center;width:100%;height:400px;">
+                <div class="js--name-winner" style="line-height: 100px;font-size:30px;"></div>
+                <div style="width: 50%;margin:auto;">
+                    <div class="js--icon" style="float:right;">
+                        <span class="badge"><i
+                                    class="fa fa-refresh js--refresh-message refresh_me refresh_icon"></i> <span
+                                    class="js--time-winner-draw"></span></span>
+                        <button type="button" class="js--next-winner btn btn-xs">Gagnant suivant</button>
+                    </div>
+                    <div class="js--message-of-winner" style="text-align: left;"></div>
+                </div>
+            </div>
         </div>
         <div class="row js--all-winners" style="display:none;">
             <table class="table table-hovered table-striped js--table-answer">
@@ -117,9 +119,12 @@
             var form = $('.js--get-winner');
             var tableAnswer = $('.js--table-answer');
             var displayWinner = $('.js--display-winner');
+            var nameWinner = $('.js--name-winner');
             var displayDice = $('.js--display-dice');
+            var messageOfWinner = $('.js--message-of-winner');
             var tableBody = tableAnswer.find('tbody');
             var oneWinner = true;
+            var alreadySearched = false;
 
             var type = form.find('#answer').data('answerType');
             if (type === 'date') {
@@ -133,10 +138,15 @@
                 e.preventDefault();
                 displayDice.hide();
                 displayWinner.hide();
+                messageOfWinner.html('');
+                clearTimeout(timeoutMessage);
+                clearInterval(intervalTimeWinner);
+                winner = null;
 
-                var callback = function(data) {};
+                var callback = function (data) {
+                };
 
-                var displayTable = function(data) {
+                var displayTable = function (data) {
                     tableBody.html('');
                     if (data.table) {
                         data.table.map(function (e) {
@@ -153,15 +163,30 @@
                 if (oneWinner) {
                     displayDice.show();
                     displayDice.html('<div style="margin-left:auto;margin-right:auto;width:480px;height:360px;"><img src="https://media.giphy.com/media/6wRAJMOXqSGCk/giphy.gif"></div>');
-                    callback = function(data) {
+                    callback = function (data) {
+                        var timeoutDisplay = 1000;
+                        if (!alreadySearched) {
+                            alreadySearched = true;
+                            timeoutDisplay = 10 * 1000;
+                        }
+                        allWinners = data.table;
+                        winnerNumber = 0;
                         displayTable(data);
-                        setTimeout(function() {
+                        setTimeout(function () {
                             displayDice.html('');
                             displayDice.hide();
                             displayWinner.show();
 
-                            displayWinner.html('Bravo <strong>' + data.winner + '</strong> !');
-                        }, (10 * 1000) - (new Date().getTime() - timeRemaining));
+                            winner = data.winner;
+                            dateWinner = new Date(data.now);
+                            nameWinner.html('Bravo <strong>' + data.winner + '</strong> !');
+                            timeWinnerDraw = parseInt((new Date()).getTime() / 1000);
+                            intervalTimeWinner = setInterval(function () {
+                                var currentTime = parseInt((new Date()).getTime() / 1000);
+                                timeWinnerDrawDiv.text(currentTime - timeWinnerDraw + ' s');
+                            }, 1000);
+                            getMessageOfWinner(winner);
+                        }, (timeoutDisplay) - (new Date().getTime() - timeRemaining));
                     };
                 } else {
                     tableBody.html('<tr><td colspan="4"><div style="display:flex;justify-content:center;align-items:center;font-size: 30px;margin: 25px;width:100%;"><i class="fa fa-lg fa-spinner fa-spin"></i></div></td></tr>');
@@ -186,7 +211,73 @@
                     $('.js--require-login').hide();
                     $('.js--all-winners').show();
                 }
-            })
+            });
+
+
+            var dateWinner = new Date();
+            var winner;
+            var idDisplay = [];
+            var lockLoadMessage = false;
+            var refreshMessage = $('.js--refresh-message');
+            var timeWinnerDrawDiv = $('.js--time-winner-draw');
+            var timeWinnerDraw;
+            var timeoutMessage;
+            var intervalTimeWinner;
+
+            refreshMessage.on('click', function () {
+                getMessageOfWinner('isak59');
+            });
+
+            function getMessageOfWinner(winner) {
+                if (lockLoadMessage) {
+                    return;
+                }
+                lockLoadMessage = true;
+                refreshMessage.removeClass('refresh_me');
+
+                $.post('/ajax/message', {winner: winner, date: dateWinner}, function (data) {
+                    var messages = data.messages;
+                    var length = messages.length;
+
+                    for (var i = 0; i < length; i++) {
+                        if (idDisplay.indexOf(messages[i].id) === -1) {
+                            var date = new Date(messages[i].sent);
+                            idDisplay.push(messages[i].id);
+                            messageOfWinner.prepend('<i>' + date.getHours() + ':' + date.getMinutes() + '</i> - ' + messages[i].message + '<br />');
+                        }
+                    }
+                }).always(function () {
+                    refreshMessage.addClass('refresh_me');
+                    lockLoadMessage = false;
+                    timeoutMessage = setTimeout(function () {
+                        getMessageOfWinner(winner);
+                    }, 2000);
+                });
+            }
+
+            var winnerNumber = 0;
+            var allWinners;
+            $('.js--next-winner').on('click', function (e) {
+                e.preventDefault();
+                winnerNumber += 1;
+
+                if (!allWinners[winnerNumber]) {
+                    nameWinner.html('Il n\'y a plus de gagnant :O');
+                    return;
+                }
+
+                messageOfWinner.html('');
+                winner = allWinners[winnerNumber].username;
+                timeWinnerDraw = parseInt((new Date()).getTime() / 1000);
+
+                clearInterval(intervalTimeWinner);
+                intervalTimeWinner = setInterval(function () {
+                    var currentTime = parseInt((new Date()).getTime() / 1000);
+                    timeWinnerDrawDiv.text(currentTime - timeWinnerDraw + ' s');
+                }, 1000);
+
+                nameWinner.html('Bravo <strong>' + winner + '</strong> avec ' + allWinners[winnerNumber].answer + ' !');
+            });
         });
 
         function gradient(ratio, minDistance) {
