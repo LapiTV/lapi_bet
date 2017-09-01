@@ -26,7 +26,7 @@
 {% block content %}
     <div class="container">
         <div id="message" class="duration_left js--live-message label label-info" data-type="clock"
-             data-time="{{ time }}">00:00:00
+             data-time="{{ time }}" data-now="{{ dateNow }}">00:00:00
         </div>
         <h2>Info</h2>
         <p>
@@ -71,22 +71,24 @@
                         <button type="submit" class="btn btn-default">Envoyer</button>
                     </td>
                 </tr>
-                <tr class="js--require-login">
-                    <td>
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" id="requiredLogged"> Connecté ?
-                            </label>
-                        </div>
-                    </td>
-                </tr>
             </table>
         </form>
         <div class="row js--one-winner" style="margin-bottom: 10px; height:400px; width:100%;">
             <div class="js--display-dice" style="display:none; padding-top:20px;height:380px;width:100%;">
             </div>
             <div class="js--display-winner col-sm-12"
-                 style="display:none;text-align:center;line-height:400px;width:100%;height:400px;font-size:30px;"></div>
+                 style="display:none;text-align:center;width:100%;height:400px;">
+                <div class="js--name-winner" style="line-height: 100px;font-size:30px;"></div>
+                <div style="width: 50%;margin:auto;">
+                    <div class="js--icon" style="float:right;">
+                        <span class="badge"><i
+                                    class="fa fa-refresh js--refresh-message refresh_me refresh_icon"></i> <span
+                                    class="js--time-winner-draw"></span></span>
+                        <button type="button" class="js--next-winner btn btn-xs">Gagnant suivant</button>
+                    </div>
+                    <div class="js--message-of-winner" style="text-align: left;"></div>
+                </div>
+            </div>
         </div>
         <div class="row js--all-winners" style="display:none;">
             <table class="table table-hovered table-striped js--table-answer">
@@ -112,14 +114,10 @@
     <script src="/js/liveTime.js"></script>
     <script src="/js/liveCharts.js"></script>
     <script src="/js/pikaday.js"></script>
+    <script src="/js/drawWinner.js"></script>
     <script type="application/javascript">
         $(function () {
             var form = $('.js--get-winner');
-            var tableAnswer = $('.js--table-answer');
-            var displayWinner = $('.js--display-winner');
-            var displayDice = $('.js--display-dice');
-            var tableBody = tableAnswer.find('tbody');
-            var oneWinner = true;
 
             var type = form.find('#answer').data('answerType');
             if (type === 'date') {
@@ -129,86 +127,7 @@
                 });
             }
 
-            form.on('submit', function (e) {
-                e.preventDefault();
-                displayDice.hide();
-                displayWinner.hide();
-
-                var callback = function(data) {};
-
-                var displayTable = function(data) {
-                    tableBody.html('');
-                    if (data.table) {
-                        data.table.map(function (e) {
-                            var online = '';
-                            if (e.online) {
-                                online = '<span class="label label-success">Online</span>';
-                            }
-                            tableBody.append('<tr style="background-color: #' + gradient(e.distance, data.minDistance) + ';"><td>' + e.username + ' ' + online + '</td><td>' + e.answer + '</td><td>' + e.distance + '</td><td>' + e.date + '</td></tr>');
-                        });
-                    }
-                };
-
-                var timeRemaining = new Date().getTime();
-                if (oneWinner) {
-                    displayDice.show();
-                    displayDice.html('<div style="margin-left:auto;margin-right:auto;width:480px;height:360px;"><img src="https://media.giphy.com/media/6wRAJMOXqSGCk/giphy.gif"></div>');
-                    callback = function(data) {
-                        displayTable(data);
-                        setTimeout(function() {
-                            displayDice.html('');
-                            displayDice.hide();
-                            displayWinner.show();
-
-                            displayWinner.html('Bravo <strong>' + data.winner + '</strong> !');
-                        }, (10 * 1000) - (new Date().getTime() - timeRemaining));
-                    };
-                } else {
-                    tableBody.html('<tr><td colspan="4"><div style="display:flex;justify-content:center;align-items:center;font-size: 30px;margin: 25px;width:100%;"><i class="fa fa-lg fa-spinner fa-spin"></i></div></td></tr>');
-                    callback = displayTable;
-                }
-
-                $.post('/ajax/bet/' + {{ bet.id }} +'/winner', {
-                    answer: form.find('#answer').val(),
-                    login: form.find('#requiredLogged').is(':checked')
-                }, callback);
-            });
-
-            $('#oneWinner').on('change', function () {
-                if ($(this).is(':checked')) {
-                    oneWinner = true;
-                    $('.js--one-winner').show();
-                    $('.js--require-login').show();
-                    $('.js--all-winners').hide();
-                } else {
-                    oneWinner = false;
-                    $('.js--one-winner').hide();
-                    $('.js--require-login').hide();
-                    $('.js--all-winners').show();
-                }
-            })
+            new DrawWinner({{ bet.id }});
         });
-
-        function gradient(ratio, minDistance) {
-            ratio -= minDistance;
-            ratio /= 15;
-            if (ratio > 1) {
-                ratio = 1;
-            }
-
-            var color1 = 'd9534f';
-            var color2 = '4cae4c';
-
-            var r = Math.ceil(parseInt(color1.substring(0, 2), 16) * ratio + parseInt(color2.substring(0, 2), 16) * (1 - ratio));
-            var g = Math.ceil(parseInt(color1.substring(2, 4), 16) * ratio + parseInt(color2.substring(2, 4), 16) * (1 - ratio));
-            var b = Math.ceil(parseInt(color1.substring(4, 6), 16) * ratio + parseInt(color2.substring(4, 6), 16) * (1 - ratio));
-
-            return hex(r) + hex(g) + hex(b);
-        }
-
-        function hex(x) {
-            x = x.toString(16);
-            return (x.length == 1) ? '0' + x : x;
-        }
     </script>
 {% endblock %}

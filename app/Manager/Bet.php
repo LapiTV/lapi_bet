@@ -16,9 +16,24 @@ class Bet extends BaseManager
 {
     protected static $table = 'bet';
 
+    private static $fieldSup = [
+        'TIMESTAMPDIFF(SECOND, datecreated, now()) as timecreated',
+        'DATE_ADD(datecreated, INTERVAL paridurationminute MINUTE) as dateend',
+        'now() as datenow'
+    ];
+
+    public static function get(int $id)
+    {
+            $selectStatement = Database::getInstance()->select(array_merge(['*'], self::$fieldSup))
+            ->from(static::$table)
+            ->where('id', '=', $id);
+
+        return $selectStatement->execute()->fetch();
+    }
+
     public static function getLastBet()
     {
-        $lastBet = Database::getInstance()->select()
+        $lastBet = Database::getInstance()->select(array_merge(['*'], self::$fieldSup))
             ->from(self::$table)
             ->orderBy('datecreated', 'DESC')
             ->limit(1, 0);
@@ -38,10 +53,7 @@ class Bet extends BaseManager
             throw new CustomException('Il n\'y a pas de pari en cours.');
         }
 
-        $dateCreated = new \DateTime($lastBet['datecreated']);
-        $interval = new \DateInterval('PT' . $lastBet['paridurationminute'] . 'M');
-
-        $dateEnd = $dateCreated->add($interval);
+        $dateEnd = new \DateTime($lastBet['dateEnd']);
 
         if($dateEnd < new \DateTime()) {
             throw new CustomException('Il n\'y a pas de pari en cours.');
