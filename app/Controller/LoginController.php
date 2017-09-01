@@ -50,7 +50,7 @@ class LoginController extends BaseController
 
     private function tryLogin(string $username, string $password)
     {
-        $user = $this->database->select()->from('user')->where('username', '=', $username);
+        $user = $this->database->select()->from('"user"')->where('username', '=', $username);
         $user = $user->execute()->fetch();
 
         if (empty($user) || !password_verify($password, $user['password'])) {

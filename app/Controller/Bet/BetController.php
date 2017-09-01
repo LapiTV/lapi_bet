@@ -31,15 +31,15 @@ class BetController extends BaseController
         }
         $answerTypes = $tmp;
 
-        $bets = Manager\Bet::getAll(['dateCreated' => 'DESC']);
+        $bets = Manager\Bet::getAll(['datecreated' => 'DESC']);
 
         foreach ($bets as $key => $bet) {
             $bets[$key]['inProgress'] = $this->isBetInProgress($bet['id']);
-            $bets[$key]['answerType'] = $answerTypes[$bet['answerTypeId']] ?? '';
+            $bets[$key]['answerType'] = $answerTypes[$bet['answertypeid']] ?? '';
 
             $selectStatement = $this->database->select(['COUNT(*) as nbre'])
                 ->from('vote')
-                ->where('betId', '=', $bet['id']);
+                ->where('betid', '=', $bet['id']);
             $votesNbr = $selectStatement->execute()->fetch();
 
             $bets[$key]['voteNumber'] = $votesNbr['nbre'] ?? 0;
@@ -66,7 +66,7 @@ class BetController extends BaseController
             $error = $ce->getMessage();
         }
 
-        $bet['answerType'] = Manager\AnswerType::get($bet['answerTypeId']);
+        $bet['answerType'] = Manager\AnswerType::get($bet['answertypeid']);
 
         return $this->view->render($response, 'displayBet.html.twig', [
             'bet' => $bet,
@@ -95,7 +95,7 @@ class BetController extends BaseController
         // Here I have a bet, that I'm allow to use, and that exists
         $votes = Manager\Vote::getVoteOf($bet['id']);
 
-        $answerType = Manager\AnswerType::get($bet['answerTypeId']);
+        $answerType = Manager\AnswerType::get($bet['answertypeid']);
 
         $result = [];
         foreach ($votes as $vote) {
@@ -147,7 +147,7 @@ class BetController extends BaseController
             return $response->withJson(['error' => 404]);
         }
 
-        $answerType = Manager\AnswerType::get($bet['answerTypeId'])['type'] ?? 'string';
+        $answerType = Manager\AnswerType::get($bet['answertypeid'])['type'] ?? 'string';
 
         $correctAnswer = Manager\AnswerType::parseMessage($answerType, $request->getParam('answer'));
         $requiredLogin = $request->getParam('login', false) === 'true';
@@ -225,8 +225,8 @@ class BetController extends BaseController
 
             $create = [
                 'name' => $name,
-                'pariDurationMinute' => $durationMinute,
-                'answerTypeId' => $answerType,
+                'paridurationminute' => $durationMinute,
+                'answertypeid' => $answerType,
             ];
 
             if(!empty($roundTo)) {
@@ -302,8 +302,8 @@ class BetController extends BaseController
             return false;
         }
 
-        $dateCreated = new \DateTime($lastBet['dateCreated']);
-        $interval = new \DateInterval('PT' . $lastBet['pariDurationMinute'] . 'M');
+        $dateCreated = new \DateTime($lastBet['datecreated']);
+        $interval = new \DateInterval('PT' . $lastBet['paridurationminute'] . 'M');
 
         $dateEnd = $dateCreated->add($interval);
 

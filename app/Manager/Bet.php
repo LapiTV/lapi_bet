@@ -20,7 +20,7 @@ class Bet extends BaseManager
     {
         $lastBet = Database::getInstance()->select()
             ->from(self::$table)
-            ->orderBy('dateCreated', 'DESC')
+            ->orderBy('datecreated', 'DESC')
             ->limit(1, 0);
 
         return $lastBet->execute()->fetch();
@@ -38,8 +38,8 @@ class Bet extends BaseManager
             throw new CustomException('Il n\'y a pas de pari en cours.');
         }
 
-        $dateCreated = new \DateTime($lastBet['dateCreated']);
-        $interval = new \DateInterval('PT' . $lastBet['pariDurationMinute'] . 'M');
+        $dateCreated = new \DateTime($lastBet['datecreated']);
+        $interval = new \DateInterval('PT' . $lastBet['paridurationminute'] . 'M');
 
         $dateEnd = $dateCreated->add($interval);
 

@@ -46,8 +46,8 @@ class HomeController extends BaseController
             throw new CustomException('Il n\'y a pas de pari en cours.');
         }
 
-        $dateCreated = new \DateTime($lastBet['dateCreated']);
-        $interval = new \DateInterval('PT' . $lastBet['pariDurationMinute'] . 'M');
+        $dateCreated = new \DateTime($lastBet['datecreated']);
+        $interval = new \DateInterval('PT' . $lastBet['paridurationminute'] . 'M');
 
         $dateEnd = $dateCreated->add($interval);
 

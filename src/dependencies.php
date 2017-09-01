@@ -35,7 +35,7 @@ $container['view'] = function ($c) {
 };
 
 $container['database'] = function ($c) {
-    $dsn = 'mysql:host=' . $c->get('settings')['database']['host'] . ';dbname=' . $c->get('settings')['database']['database'] . ';charset=utf8';
+    $dsn = $c->get('settings')['database']['driver'] . ':host=' . $c->get('settings')['database']['host'] . ';dbname=' . $c->get('settings')['database']['database'] . ';';
     $usr = $c->get('settings')['database']['username'];
     $pwd = $c->get('settings')['database']['password'];
 

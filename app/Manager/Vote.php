@@ -21,7 +21,7 @@ class Vote extends BaseManager
     {
         $selectStatement = Database::getInstance()->select()
             ->from('vote')
-            ->where('betId', '=', $betId);
+            ->where('betid', '=', $betId);
 
         return $selectStatement->execute()->fetchAll();
     }
