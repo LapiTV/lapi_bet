@@ -21,7 +21,7 @@ class HomeController extends BaseController
         try {
             // TODO: Use the one from Manager
             $time = $this->getLastBetEnd();
-        } catch(CustomException $ce) {
+        } catch (CustomException $ce) {
             $error = $ce->getMessage();
         }
 

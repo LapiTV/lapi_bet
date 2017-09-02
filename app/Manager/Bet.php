@@ -17,14 +17,14 @@ class Bet extends BaseManager
     protected static $table = 'bet';
 
     private static $fieldSup = [
-        '(EXTRACT(EPOCH FROM current_timestamp - datecreated))::Integer AS "timecreated" ',
+        '(EXTRACT(EPOCH FROM current_timestamp - datecreated))::Integer AS "timecreated"',
         'datecreated + paridurationminute * INTERVAL \'1 minute\' as dateend',
         'now() as datenow'
     ];
 
     public static function get(int $id)
     {
-            $selectStatement = Database::getInstance()->select(array_merge(['*'], self::$fieldSup))
+        $selectStatement = Database::getInstance()->select(array_merge(['*'], self::$fieldSup))
             ->from(static::$table)
             ->where('id', '=', $id);
 
@@ -58,7 +58,7 @@ class Bet extends BaseManager
 
         $dateEnd = $dateCreated->add($interval);
 
-        if($dateEnd < new \DateTime()) {
+        if ($dateEnd < new \DateTime()) {
             throw new CustomException('Il n\'y a pas de pari en cours.');
         }
 
