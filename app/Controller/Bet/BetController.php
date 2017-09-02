@@ -71,7 +71,7 @@ class BetController extends BaseController
 
         return $this->view->render($response, 'displayBet.html.twig', [
             'bet' => $bet,
-            'dateNow' => (new \DateTime($bet['dateNow']))->getTimestamp(),
+            'dateNow' => (new \DateTime($bet['datenow']))->getTimestamp(),
             'time' => !empty($time) ? $time->getTimestamp() : null,
             'error' => $error ?? null,
             'inProgress' => $this->isBetInProgress($bet['id']),
@@ -152,7 +152,6 @@ class BetController extends BaseController
         $answerType = Manager\AnswerType::get($bet['answertypeid'])['type'] ?? 'string';
 
         $correctAnswer = Manager\AnswerType::parseMessage($answerType, $request->getParam('answer'));
-        $requiredLogin = $request->getParam('login', false) === 'true';
 
         $votes = Manager\Vote::getVoteOf($bet['id']);
 
@@ -160,7 +159,6 @@ class BetController extends BaseController
 
         $minDistance = null;
 
-//        $usersOnline = Util::getUserOnline();
         foreach ($votes as $vote) {
             $userAnswer = Manager\AnswerType::parseMessage($answerType, $vote['answer']);
             $distance = Manager\AnswerType::calcDistance(
@@ -179,10 +177,9 @@ class BetController extends BaseController
 
             $row = [
                 'username' => $vote['username'],
-                'date' => $vote['dateVote'],
+                'date' => $vote['datevote'],
                 'answer' => $userAnswer,
                 'distance' => $distance,
-//                'online' => in_array($vote['username'], $usersOnline),
                 'random' => rand(0, 100),
             ];
 
@@ -199,14 +196,13 @@ class BetController extends BaseController
         });
 
         $winner = $res[0]['username'];
-//        for($i = 0; count($res); $i++) {
-//            if(!$requiredLogin || $res[$i]['online']) {
-//                $winner = $res[$i]['username'];
-//                break;
-//            }
-//        }
 
-        return $response->withJson(['table' => $res, 'winner' => $winner, 'minDistance' => $minDistance, 'now' => Database::getTimeDatabase()]);
+        return $response->withJson([
+            'table' => $res,
+            'winner' => $winner,
+            'minDistance' => $minDistance,
+            'now' => Database::getTimeDatabase()
+        ]);
     }
 
     public function createBet(Request $request, Response $response)
@@ -266,11 +262,11 @@ class BetController extends BaseController
             throw new FormException('Le nom du pari est requis.');
         }
 
-        if (empty($data['answerTypeId'])) {
+        if (empty($data['answertypeid'])) {
             throw new FormException('Le type de réponse du pari est requis.');
         }
 
-        if (empty($data['pariDurationMinute'])) {
+        if (empty($data['paridurationminute'])) {
             throw new FormException('La durée du pari est requise.');
         }
 

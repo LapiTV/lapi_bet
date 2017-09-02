@@ -17,8 +17,8 @@ class Bet extends BaseManager
     protected static $table = 'bet';
 
     private static $fieldSup = [
-        'TIMESTAMPDIFF(SECOND, datecreated, now()) as timecreated',
-        'DATE_ADD(datecreated, INTERVAL paridurationminute MINUTE) as dateend',
+        '(EXTRACT(EPOCH FROM current_timestamp - datecreated))::Integer AS "timecreated" ',
+        'datecreated + paridurationminute * INTERVAL \'1 minute\' as dateend',
         'now() as datenow'
     ];
 
@@ -53,7 +53,10 @@ class Bet extends BaseManager
             throw new CustomException('Il n\'y a pas de pari en cours.');
         }
 
-        $dateEnd = new \DateTime($lastBet['dateEnd']);
+        $dateCreated = new \DateTime($lastBet['datecreated']);
+        $interval = new \DateInterval('PT' . $lastBet['paridurationminute'] . 'M');
+
+        $dateEnd = $dateCreated->add($interval);
 
         if($dateEnd < new \DateTime()) {
             throw new CustomException('Il n\'y a pas de pari en cours.');

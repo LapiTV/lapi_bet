@@ -20,7 +20,7 @@ class HomeController extends BaseController
     {
         try {
             // TODO: Use the one from Manager
-            $time = $this->getDateEnd();
+            $time = $this->getLastBetEnd();
         } catch(CustomException $ce) {
             $error = $ce->getMessage();
         }
@@ -29,7 +29,7 @@ class HomeController extends BaseController
 
         return $this->view->render($response, 'home.html.twig', [
             'time' => !empty($time) ? $time->getTimestamp() : null,
-            'dateNow' => (new \DateTime($lastBet['dateNow']))->getTimestamp(),
+            'dateNow' => (new \DateTime($lastBet['datenow']))->getTimestamp(),
             'error' => $error ?? null,
             'bet' => $lastBet
         ]);
@@ -39,7 +39,7 @@ class HomeController extends BaseController
      * @return \DateTime
      * @throws CustomException
      */
-    private function getDateEnd()
+    private function getLastBetEnd()
     {
         $lastBet = Manager\Bet::getLastBet();
 
@@ -47,15 +47,6 @@ class HomeController extends BaseController
             throw new CustomException('Il n\'y a pas de pari en cours.');
         }
 
-        $dateCreated = new \DateTime($lastBet['datecreated']);
-        $interval = new \DateInterval('PT' . $lastBet['paridurationminute'] . 'M');
-
-        $dateEnd = $dateCreated->add($interval);
-
-        if($dateEnd < new \DateTime()) {
-            throw new CustomException('Il n\'y a pas de pari en cours.');
-        }
-
-        return $dateEnd->setTimezone(new \DateTimeZone('UTC'));
+        return Manager\Bet::getDateEnd($lastBet['id']);
     }
 }

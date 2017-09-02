@@ -32,8 +32,8 @@
         <p>
             <b>Nom</b> : {{ bet.name }}<br/>
             <b>Type</b> : {{ bet.answerType.name }}<br/>
-            <b>Début</b> : {{ bet.dateCreated|date('d/m/Y H:i:s') }}<br/>
-            <b>Durée</b> : {{ bet.pariDurationMinute }} minutes
+            <b>Début</b> : {{ bet.datecreated|date('d/m/Y H:i:s') }}<br/>
+            <b>Durée</b> : {{ bet.paridurationminute }} minutes
         </p>
         <h2>Réponses</h2>
         <div class="js--graph-live" id="graphHighchart" data-live-update="{{ inProgress }}" data-bet-id="{{ bet.id }}"

@@ -153,7 +153,7 @@ DrawWinner.prototype.getMessageWinner = function () {
     this.lockLoadMessages = true;
     this.element.winner.refresh.removeClass('refresh_me');
 
-    $.post('/ajax/message', {winner: this.currentWinner, date: this.time.timeDbWinnerDraw}, function (data) {
+    $.post('/ajax/message', {winner: this.currentWinner, date: this.time.timeDbWinnerDraw.getTime() / 1000}, function (data) {
         var messages = data.messages;
         var length = messages.length;
 
@@ -171,7 +171,7 @@ DrawWinner.prototype.getMessageWinner = function () {
             _this.getMessageWinner();
         }, 2000);
     });
-}
+};
 
 DrawWinner.prototype.reset = function () {
     this.element.dice.hide();

@@ -21,7 +21,7 @@ class UserController extends BaseController
 
         $username = $request->getParam('winner');
         $date = $request->getParam('date');
-        $date = new \DateTime($date);
+        $date = (new \DateTime())->setTimestamp($date);
 
         if (empty($username) || empty($date)) {
             return $response->withJson(['messages' => []]);
