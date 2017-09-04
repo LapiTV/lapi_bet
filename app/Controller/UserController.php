@@ -29,6 +29,7 @@ class UserController extends BaseController
 
         $messages = $pdo->select()->from('message')
             ->where('username', '=', $username)
+            ->where('channel', '=', 'w_lapin') 
             ->where('sent', '>', $date->format('Y-m-d H:i:s'))
             ->orderBy('sent')
             ->execute()->fetchAll();
