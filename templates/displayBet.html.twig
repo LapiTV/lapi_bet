@@ -1,7 +1,10 @@
 {% extends 'template/base.html.twig' %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="/css/pikaday.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/css/pikaday.min.css"
+          integrity="sha256-QeBQ7yamXxr4+oYQSRzluL3bLLul8ZpZO4Q/AmI+rvM="
+          crossorigin="anonymous" />
     <style type="text/css">
         #graphHighchart {
             min-width: 320px;
@@ -108,12 +111,20 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script src="/js/highcharts.js"></script>
-    <script src="/js/highcharts-more.js"></script>
-    <script src="/js/modules/exporting.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/5.0.14/highcharts.js"
+            integrity="sha256-0+x1DGGOm17hg9UnUgTPEIbqpnUYG7+b/P/uYMO13N0="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/5.0.14/js/highcharts-more.js"
+            integrity="sha256-v3bnWLik5vm/NQACjS3DMFHqLU0SP8LjU88BfV+4ROI="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/5.0.14/js/modules/exporting.js"
+            integrity="sha256-6bZvN9W/+uyWX9vlaZOchNkijOkibejU2Yng54XHG4I="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/pikaday.min.js"
+            integrity="sha256-nzvGziG948yQHPWFJCynD1AmNPBwYWY2nVZYaDCpq4E="
+            crossorigin="anonymous"></script>
     <script src="/js/liveTime.js"></script>
     <script src="/js/liveCharts.js"></script>
-    <script src="/js/pikaday.js"></script>
     <script src="/js/drawWinner.js"></script>
     <script type="application/javascript">
         $(function () {
