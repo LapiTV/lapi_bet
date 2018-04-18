@@ -279,7 +279,7 @@ class BetController extends BaseController
             ->values(array_values($data));
 
         $insertId = $insert->execute();
-        SmsNotification::sendSms('Ajout d\'un vote ! ' . $data['name']);
+//        SmsNotification::sendSms('Ajout d\'un vote ! ' . $data['name']);
 
         if (!empty($insertId)) {
             return $insertId;
