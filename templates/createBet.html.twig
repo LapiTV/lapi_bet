@@ -8,10 +8,6 @@
                 <div class="alert alert-danger" role="alert">{{ error }}</div>
             {% endif %}
             <div class="form-group">
-                <label for="name">Nom</label>
-                <input type="text" required class="form-control" name="name" id="name" placeholder="Nom" value="{{ data.name }}">
-            </div>
-            <div class="form-group">
                 <label for="answerType">Type de réponse</label>
                 <select class="form-control" name="answerType" id="answerType">
                     {% for type in answerTypes %}
@@ -19,12 +15,24 @@
                     {% endfor %}
                 </select>
             </div>
+            <div class="form-group js--team-1">
+                <label for="team-1">Team 1</label>
+                <input type="text" required class="form-control" name="team-1" id="team-1" placeholder="Team 1" value="{{ data.team1 }}">
+            </div>
+            <div class="form-group js--team-2">
+                <label for="team-2">Team 2</label>
+                <input type="text" required class="form-control" name="team-2" id="team-2" placeholder="Team 2" value="{{ data.team2 }}">
+            </div>
+            <div class="form-group js--name-field">
+                <label for="name">Nom</label>
+                <input type="text" required class="form-control" name="name" id="name" placeholder="Nom" value="{{ data.name }}">
+            </div>
             <div class="form-group js--roundTo">
                 <label for="roundTo">Arrondir à l'affichage</label>
                 <input type="number" class="form-control" name="roundTo" id="roundTo" placeholder="10" value="{{ data.name }}">
                 <span id="helpBlock" class="help-block">Pour arrondir à la dizaine, mettre "10". Cela n'affectera pas les gagnants, juste l'affichage graphique.</span>
             </div>
-            <div class="form-group">
+            <div class="form-group js--field-duration">
                 <label for="durationMinute">Durée du pari</label>
                 <div class="input-group">
                     <input type="number" min="0" class="form-control js--duration" id="durationMinute"
@@ -54,6 +62,22 @@
             } else {
                 $('.js--roundTo').hide();
             }
+
+            if($(this).val() === '6') {
+                $('.js--name-field').hide();
+                $('.js--name-field input').val('Qui va gagner ce versus ? !');
+                $('.js--field-duration').hide().val(5);
+                $('.js--field-duration input').val(5);
+                $('.js--team-1').show();
+                $('.js--team-2').show();
+            } else {
+                $('.js--name-field').show();
+                $('.js--field-duration').show();
+                $('.js--team-1').hide();
+                $('.js--team-2').hide();
+            }
         });
+
+        form.find('#answerType').trigger('change');
     </script>
 {% endblock %}

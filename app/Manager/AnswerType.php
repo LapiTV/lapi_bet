@@ -47,6 +47,8 @@ class AnswerType extends BaseManager
                     return false;
                 }
                 return $key;
+            case 'mdi':
+                return $message;
         }
 
         return false;
@@ -72,6 +74,8 @@ class AnswerType extends BaseManager
                 $interval = $answer->diff($try);
 
                 return abs((int)$interval->format('%R%a'));
+            case 'mdi':
+                return (int) ($answer != $try);
             default:
                 return 30;
         }

@@ -144,6 +144,7 @@ class BetController extends BaseController
     public function ajaxGetWinnerBet(Request $request, Response $response, $args)
     {
         $bet = Manager\Bet::get($args['betId']);
+        $bet['parameter'] = json_decode($bet['parameter'], true);
 
         if (empty($bet)) {
             return $response->withJson(['error' => 404]);
@@ -152,6 +153,10 @@ class BetController extends BaseController
         $answerType = Manager\AnswerType::get($bet['answertypeid'])['type'] ?? 'string';
 
         $correctAnswer = Manager\AnswerType::parseMessage($answerType, $request->getParam('answer'));
+
+        if($answerType === 'mdi') {
+            $correctAnswer = $bet['parameter']['team-' . $correctAnswer];
+        }
 
         $votes = Manager\Vote::getVoteOf($bet['id']);
 
@@ -229,6 +234,15 @@ class BetController extends BaseController
 
             if (!empty($roundTo)) {
                 $create['parameter'] = json_encode(['roundTo' => (int)$roundTo]);
+            }
+
+            if($answerType == 6) {
+                $create['parameter'] = json_encode([
+                    'team-1' => $request->getParam('team-1'),
+                    'team-2' => $request->getParam('team-2'),
+                ]);
+
+                $create['name'] = 'Qui va gagner ce versus ? ! 1 pour ' . $request->getParam('team-1') . '; 2 pour ' . $request->getParam('team-2');
             }
 
             try {
