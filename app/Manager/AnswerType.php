@@ -11,6 +11,8 @@ namespace Bet\App\Manager;
 
 class AnswerType extends BaseManager
 {
+    protected const LEVENSHTEIN_THRESHOLD = 3;
+
     protected static $table = 'answerType';
 
     public static function parseMessage($type, $message)
@@ -64,7 +66,12 @@ class AnswerType extends BaseManager
     {
         switch ($type) {
             case 'string':
-                return \levenshtein($answer, $try);
+                $levenshtein = levenshtein($answer, $try);
+                if($levenshtein <= self::LEVENSHTEIN_THRESHOLD) {
+                    return 0;
+                }
+
+                return $levenshtein;
             case 'int':
                 return \abs($answer - $try);
             case 'date':
