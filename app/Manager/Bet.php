@@ -22,6 +22,24 @@ class Bet extends BaseManager
         'now() as datenow'
     ];
 
+    public static function getAll($orderBy = null, $limit = 20)
+    {
+        $selectStatement = Database::getInstance()->select(array_merge(['*'], self::$fieldSup))
+            ->from(static::$table);
+
+        if(!empty($orderBy)) {
+            foreach($orderBy as $col => $dir) {
+                $selectStatement->orderBy($col, $dir);
+            }
+        }
+
+        if(!empty($limit)) {
+            $selectStatement->limit($limit);
+        }
+
+        return $selectStatement->execute()->fetchAll();
+    }
+
     public static function get(int $id)
     {
         $selectStatement = Database::getInstance()->select(array_merge(['*'], self::$fieldSup))

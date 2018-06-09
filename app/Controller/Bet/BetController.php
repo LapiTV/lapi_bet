@@ -25,30 +25,33 @@ class BetController extends BaseController
     public function listBetAction(Request $request, Response $response)
     {
         $answerTypes = Manager\AnswerType::getAll();
+        $answerTypes = array_column($answerTypes, 'name', 'id');
 
-        $tmp = [];
-        foreach ($answerTypes as $answerType) {
-            $tmp[$answerType['id']] = $answerType['name'];
-        }
-        $answerTypes = $tmp;
+        $bets = Manager\Bet::getAll(['datecreated' => 'DESC'], 20);
 
-        $bets = Manager\Bet::getAll(['datecreated' => 'DESC']);
+        $countBet = $this->getCountPerBet(array_column($bets, 'id'));
 
         foreach ($bets as $key => $bet) {
-            $bets[$key]['inProgress'] = $this->isBetInProgress($bet['id']);
+            $bets[$key]['inProgress'] = $this->isBetArrayInProgress($bet);
             $bets[$key]['answerType'] = $answerTypes[$bet['answertypeid']] ?? '';
 
-            $selectStatement = $this->database->select(['COUNT(*) as nbre'])
-                ->from('vote')
-                ->where('betid', '=', $bet['id']);
-            $votesNbr = $selectStatement->execute()->fetch();
-
-            $bets[$key]['voteNumber'] = $votesNbr['nbre'] ?? 0;
+            $bets[$key]['voteNumber'] = $countBet[$bet['id']] ?? 0;
         }
 
         $this->view->render($response, 'listBet.html.twig', [
             'bets' => $bets,
         ]);
+    }
+
+    private function getCountPerBet($betIds)
+    {
+        $in  = str_repeat('?,', count($betIds) - 1) . '?';
+        $stmt = $this->database->prepare('SELECT betid, COUNT(*) FROM vote WHERE betid IN ('.$in.') GROUP BY betid;');
+        $stmt->execute($betIds);
+
+        $result = $stmt->fetchAll();
+
+        return array_column($result, 'count', 'betid');
     }
 
     public function displayBetAction(Request $request, Response $response, $args)
@@ -314,8 +317,13 @@ class BetController extends BaseController
             return false;
         }
 
-        $timeCreated = $lastBet['timecreated'];
-        $duration = $lastBet['paridurationminute'] * 60;
+        return $this->isBetArrayInProgress($lastBet);
+    }
+
+    private function isBetArrayInProgress(array $bet)
+    {
+        $timeCreated = $bet['timecreated'];
+        $duration = $bet['paridurationminute'] * 60;
         $timeLeft = $duration - $timeCreated;
 
         return $timeLeft > 0;

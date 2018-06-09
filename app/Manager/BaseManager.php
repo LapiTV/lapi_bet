@@ -15,7 +15,7 @@ class BaseManager
 {
     protected static $table = '';
 
-    public static function getAll($orderBy = null)
+    public static function getAll($orderBy = null, $limit = null)
     {
         $selectStatement = Database::getInstance()->select()
             ->from(static::$table);
@@ -24,6 +24,10 @@ class BaseManager
             foreach($orderBy as $col => $dir) {
                 $selectStatement->orderBy($col, $dir);
             }
+        }
+
+        if(!empty($limit)) {
+            $selectStatement->limit($limit);
         }
 
         return $selectStatement->execute()->fetchAll();
