@@ -246,6 +246,31 @@ class BetController extends BaseController
                 ]);
 
                 $create['name'] = 'Qui va gagner ce versus ? ! 1 pour ' . $request->getParam('team-1') . '; 2 pour ' . $request->getParam('team-2');
+            } elseif($answerType == 8) {
+                $choices = $request->getParam('choices');
+                $choices = str_replace(["\r\n", "\r"], "\n", $choices);
+                $choices = explode("\n", $choices);
+                $choices = array_filter($choices, function ($choice) {
+                    return !empty($choice);
+                });
+                $choices = array_values($choices);
+
+                foreach ($choices as $key => $choice) {
+                    $choices[$key] = [
+                        'label' => $choice,
+                        'key' => $key + 1,
+                    ];
+                }
+
+                $text = implode('; ', array_map(function ($choice) {
+                    return $choice['key'] . ' pour ' . $choice['label'];
+                }, $choices));
+
+                $create['name'] .= ' ' . $text;
+
+                $create['parameter'] = json_encode([
+                    'choices' => $choices,
+                ]);
             }
 
             try {

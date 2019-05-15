@@ -27,6 +27,10 @@
                 <label for="name">Nom</label>
                 <input type="text" required class="form-control" name="name" id="name" placeholder="Nom" value="{{ data.name }}">
             </div>
+            <div class="form-group js--choice-type">
+                <label for="choices">Liste de choix</label>
+                <textarea class="form-control" id="choices" name="choices"></textarea>
+            </div>
             <div class="form-group js--roundTo">
                 <label for="roundTo">Arrondir à l'affichage</label>
                 <input type="number" class="form-control" name="roundTo" id="roundTo" placeholder="10" value="{{ data.name }}">
@@ -75,6 +79,15 @@
                 $('.js--field-duration').show();
                 $('.js--team-1').hide();
                 $('.js--team-2').hide();
+            }
+
+            if($(this).val() === '8') {
+                $('.js--name-field').show();
+                $('.js--team-1').hide();
+                $('.js--team-2').hide();
+                $('.js--choice-type').show();
+            } else {
+                $('.js--choice-type').hide();
             }
         });
 

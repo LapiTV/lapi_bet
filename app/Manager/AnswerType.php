@@ -51,6 +51,8 @@ class AnswerType extends BaseManager
                 return $key;
             case 'mdi':
                 return $message;
+            case 'choice':
+                return $message;
         }
 
         return false;
@@ -82,6 +84,7 @@ class AnswerType extends BaseManager
 
                 return abs((int)$interval->format('%R%a'));
             case 'mdi':
+            case 'choice':
                 return (int) ($answer != $try);
             default:
                 return 30;
